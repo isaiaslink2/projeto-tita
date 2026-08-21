@@ -1,0 +1,1692 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BATALHA DE TITÃS 3D</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;background:#05060f;overflow:hidden;
+    font-family:"Arial Black",Arial,sans-serif;color:#fff;user-select:none}
+  canvas{display:block}
+
+  #hud{position:fixed;inset:0;pointer-events:none;opacity:0;transition:opacity .3s}
+  #hud.on{opacity:1}
+  .lado{position:absolute;top:20px;width:38%}
+  .lado.esq{left:24px} .lado.dir{right:24px;text-align:right}
+  .quem{font-size:18px;color:#ffd873;letter-spacing:1px}
+  .lado.dir .quem{color:#59a5ff}
+  .barra{height:28px;background:#4a1b23;border:4px solid #14131c;border-radius:4px;
+    margin-top:5px;overflow:hidden}
+  .barra.fury{height:14px;background:#241d30;margin-top:5px}
+  .barra i{display:block;height:100%;width:100%;background:linear-gradient(#5ef58a,#25b556);
+    transition:width .12s linear}
+  .lado.dir .barra i{margin-left:auto}
+  .barra.fury i{background:linear-gradient(#ffc65e,#f07d1c);transition:width .2s linear}
+  .barra.fury.cheia i{background:linear-gradient(#fffbc2,#ffe14d);box-shadow:0 0 16px #ffe14d}
+  .nome{font-size:24px;margin-top:5px;text-shadow:3px 3px 0 #14131c}
+  .pronto{font-size:16px;color:#fff07a;margin-top:2px;opacity:0;text-shadow:2px 2px 0 #14131c}
+  .pronto.on{animation:pisca .55s steps(2,end) infinite}
+  @keyframes pisca{0%{opacity:1}50%{opacity:.15}100%{opacity:1}}
+
+  .centro{position:absolute;top:14px;left:50%;transform:translateX(-50%);text-align:center}
+  #placar{font-size:58px;text-shadow:4px 4px 0 #14131c;line-height:1}
+  #relogio{font-size:36px;color:#ffd873;text-shadow:3px 3px 0 #14131c}
+  #relogio.pouco{color:#ff5a5a}
+  #aviso{position:absolute;top:200px;left:50%;transform:translateX(-50%);
+    font-size:40px;color:#fff07a;text-shadow:4px 4px 0 #14131c;opacity:0;
+    transition:opacity .18s;white-space:nowrap}
+  #aviso.on{opacity:1}
+
+  .tela{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;
+    justify-content:center;pointer-events:none;text-align:center}
+  .tela.on{display:flex}
+  .tela h1{font-size:60px;color:#ffd873;text-shadow:5px 5px 0 #14131c;letter-spacing:2px}
+  .tela h2{font-size:36px;text-shadow:4px 4px 0 #14131c;margin-top:8px}
+  .dica{font-size:20px;margin-top:12px;text-shadow:2px 2px 0 #14131c}
+  .dica.p1{color:#ffd873} .dica.p2{color:#59a5ff} .dica.ok{color:#3ddc6d}
+  .mini{font-size:15px;color:#8b86a4;margin-top:10px;line-height:1.6}
+  #selecao{justify-content:space-between;padding:20px 0 24px}
+  #selecao h1{font-size:46px}
+  #rodape{width:100%}
+  #fim{justify-content:flex-start;padding-top:34px}
+
+  #marcas{position:fixed;inset:0;pointer-events:none}
+  .marca{position:absolute;transform:translate(-50%,0);text-align:center;width:118px}
+  .marca .n{font-size:17px;text-shadow:3px 3px 0 #14131c;white-space:nowrap}
+  .marca .e{font-size:11px;color:#9fd8ff;margin-top:2px;min-height:16px;line-height:1.3}
+  .cursor{font-size:20px;text-shadow:3px 3px 0 #14131c;margin-bottom:3px;height:24px}
+  .cursor span{margin:0 4px}
+
+  #contagem{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:200px;color:#ffd873;text-shadow:8px 8px 0 #14131c;pointer-events:none;opacity:0}
+  #contagem.on{opacity:1}
+  #contagem.lutar{font-size:120px;color:#ff6b5a}
+</style>
+</head>
+<body>
+
+<div id="hud">
+  <div class="lado esq">
+    <div class="quem">JOGADOR 1</div>
+    <div class="barra"><i id="vida1"></i></div>
+    <div class="barra fury" id="fbar1"><i id="fury1"></i></div>
+    <div class="nome" id="nome1">—</div>
+    <div class="pronto" id="pronto1">ESPECIAL PRONTO!</div>
+  </div>
+  <div class="centro">
+    <div id="placar">0 - 0</div>
+    <div id="relogio">60</div>
+  </div>
+  <div class="lado dir">
+    <div class="quem">JOGADOR 2</div>
+    <div class="barra"><i id="vida2"></i></div>
+    <div class="barra fury" id="fbar2"><i id="fury2"></i></div>
+    <div class="nome" id="nome2">—</div>
+    <div class="pronto" id="pronto2">ESPECIAL PRONTO!</div>
+  </div>
+  <div id="aviso"></div>
+</div>
+
+<div id="marcas"></div>
+
+<div id="selecao" class="tela on">
+  <h1>BATALHA DE TITÃS</h1>
+  <div id="rodape">
+    <div class="dica p1" id="d1">P1: A / D pra escolher, S pra confirmar</div>
+    <div class="dica p2" id="d2">P2: ← / → pra escolher, ↓ pra confirmar</div>
+    <div class="mini">
+      MESMO BOTÃO, 4 GOLPES: parado = soco &nbsp;•&nbsp; correndo = investida
+      &nbsp;•&nbsp; lá no alto = voadora &nbsp;•&nbsp; barra cheia = ESPECIAL<br>
+      ✦ QUEM TEM ASA VOA: segura o pulo (W / ↑) pra subir!<br>
+      W / ↑ pra voltar
+    </div>
+  </div>
+</div>
+
+<div id="contagem"></div>
+
+<div id="fim" class="tela">
+  <h1 id="fimTitulo">—</h1>
+  <h2 id="fimPlacar">—</h2>
+  <div class="dica ok">ESPAÇO pra jogar de novo</div>
+  <div class="mini">ENTER pra trocar de monstro</div>
+</div>
+
+<script src="three.min.js"></script>
+<script>
+"use strict";
+
+/* ==========================================================
+   BATALHA DE TITÃS 3D
+   J1: A/D anda, W pula, S bate  |  J2: ←/→, ↑, ↓
+   O MESMO botão de bater dá 4 golpes diferentes:
+     parado -> soco | correndo -> investida | no ar -> voadora
+     barra de especial cheia -> o especial do monstro
+   ========================================================== */
+
+const TUNING = {
+  roundTime:    60,
+  maxHp:       100,
+  danoSoco:      6,
+  danoInvestida:10,
+  danoVoadora:   9,
+  furiaAcerto:  13,
+  furiaApanha:   9,
+  koTime:      2.0,
+  walkSpeed:   270,
+  jumpSpeed:   720,
+  gravity:    1900,
+  limiteX:     640,
+};
+
+const ROSTER = [
+  { id:'godzilla', nome:'GODZILLA', cor:0x46a352, cor2:0x2e7038, claro:0xd7ecbe,
+    voa:false, metal:0.05, aspero:0.85, especial:'raio',    txtEsp:'SOPRO ATÔMICO' },
+  { id:'kong',     nome:'KONG',     cor:0x8a5a3b, cor2:0x5d3c26, claro:0xe0bb92,
+    voa:false, metal:0.02, aspero:0.95, especial:'sismo',   txtEsp:'SOCO SÍSMICO' },
+  { id:'mothra',   nome:'MOTHRA',   cor:0xf2a03d, cor2:0xcf7526, claro:0xf7e9cb,
+    voa:true,  metal:0.10, aspero:0.80, especial:'escamas', txtEsp:'CHUVA DE ESCAMAS' },
+  { id:'rodan',    nome:'RODAN',    cor:0xd0453f, cor2:0x932b28, claro:0xf2c9a0,
+    voa:true,  metal:0.06, aspero:0.85, especial:'mergulho',txtEsp:'MERGULHO SUPERSÔNICO' },
+  { id:'ghidorah', nome:'GHIDORAH', cor:0xe6bb46, cor2:0xa8801f, claro:0xfff0b8,
+    voa:true,  metal:0.65, aspero:0.35, especial:'triplo',  txtEsp:'RAIOS GRAVITACIONAIS' },
+];
+const PALETA_P2 = { godzilla:0x4f7ecb, kong:0x6f6f80, mothra:0xc96ec9,
+                    rodan:0xe0b23c, ghidorah:0x9ad0e6 };
+
+/* ================== CENA ================================= */
+const renderer = new THREE.WebGLRenderer({ antialias:true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputEncoding = THREE.sRGBEncoding;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x090c22);
+scene.fog = new THREE.Fog(0x090c22, 2100, 4600);
+
+const camera = new THREE.PerspectiveCamera(44, innerWidth/innerHeight, 1, 6000);
+camera.position.set(0, 300, 1100);
+
+addEventListener('resize', () => {
+  camera.aspect = innerWidth/innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+scene.add(new THREE.HemisphereLight(0x5566b0, 0x120f18, 0.18));
+const lua = new THREE.DirectionalLight(0xfff0c8, 0.95);
+lua.position.set(420, 700, 520);
+lua.castShadow = true;
+lua.shadow.mapSize.set(2048, 2048);
+lua.shadow.camera.left = -1200; lua.shadow.camera.right = 1200;
+lua.shadow.camera.top = 900;    lua.shadow.camera.bottom = -300;
+lua.shadow.camera.near = 100;   lua.shadow.camera.far = 2400;
+lua.shadow.bias = -0.0018;
+scene.add(lua);
+// luz de recorte por trás: é ela que descola o monstro do fundo e dá "acabamento"
+const recorte = new THREE.DirectionalLight(0x66d9ff, 0.55);
+recorte.position.set(-500, 380, -700);
+scene.add(recorte);
+// brilho quente da cidade subindo do chão
+const brilhoCidade = new THREE.PointLight(0xff9a3c, 0.85, 2200);
+brilhoCidade.position.set(0, 40, -260);
+scene.add(brilhoCidade);
+scene.add(new THREE.AmbientLight(0x2a3160, 0.20));
+
+function texAsfalto(){
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const g = c.getContext('2d');
+  g.fillStyle = '#131019'; g.fillRect(0,0,128,128);
+  for (let i=0;i<900;i++){
+    g.fillStyle = 'rgba(255,255,255,' + (Math.random()*0.05) + ')';
+    g.fillRect(Math.random()*128, Math.random()*128, 2, 2);
+  }
+  g.strokeStyle = 'rgba(255,220,150,.10)'; g.lineWidth = 2;
+  g.beginPath(); g.moveTo(0,64); g.lineTo(128,64); g.stroke();
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(40,40);
+  return t;
+}
+const chao = new THREE.Mesh(
+  new THREE.PlaneGeometry(6000, 6000),
+  new THREE.MeshStandardMaterial({ map: texAsfalto(), color:0x2a2436,
+                                   roughness:0.92, metalness:0.05 })
+);
+chao.rotation.x = -Math.PI/2;
+chao.receiveShadow = true;
+scene.add(chao);
+
+const luaMesh = new THREE.Mesh(new THREE.SphereGeometry(120, 24, 16),
+  new THREE.MeshBasicMaterial({ color: 0xf7f0cf }));
+luaMesh.position.set(900, 760, -1500);
+scene.add(luaMesh);
+
+{
+  const g = new THREE.BufferGeometry(), pos = [];
+  for (let i=0;i<600;i++)
+    pos.push((Math.random()-0.5)*5000, Math.random()*1800+200, -1200 - Math.random()*2400);
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  scene.add(new THREE.Points(g, new THREE.PointsMaterial({ color:0xffffff, size:6 })));
+}
+
+/* ---------- cidade ---------- */
+function texJanelas(){
+  const c = document.createElement('canvas'); c.width = 64; c.height = 128;
+  const g = c.getContext('2d');
+  g.fillStyle = '#151925'; g.fillRect(0,0,64,128);
+  for (let y=0;y<14;y++) for (let x=0;x<4;x++){
+    g.fillStyle = Math.random() < 0.5 ? '#ffd873' : '#161a26';
+    g.fillRect(6 + x*14, 6 + y*8.6, 8, 5);
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  return t;
+}
+const TEX = [texJanelas(), texJanelas(), texJanelas()];
+
+const predios = [];
+function criaPredio(x, z, larg, alt, prof, perto){
+  const tex = TEX[Math.floor(Math.random()*TEX.length)].clone();
+  tex.needsUpdate = true;
+  tex.repeat.set(Math.max(1, larg/70), Math.max(1, alt/90));
+  const mat = new THREE.MeshPhongMaterial({
+    map: tex, emissive: 0xffcc66, emissiveMap: tex, emissiveIntensity: 0.9, shininess: 0
+  });
+  const m = new THREE.Mesh(new THREE.BoxGeometry(larg, alt, prof), mat);
+  m.position.set(x, alt/2, z);
+  m.castShadow = perto; m.receiveShadow = true;
+  scene.add(m);
+  const p = { mesh:m, altura:alt, quebrado:false, perto, queda:0 };
+  predios.push(p);
+  return p;
+}
+function montaCidade(){
+  for (const p of predios) scene.remove(p.mesh);
+  predios.length = 0;
+  for (let i=0;i<26;i++)
+    criaPredio(-1700 + i*140 + Math.random()*40, -900 - Math.random()*500,
+               90+Math.random()*50, 260+Math.random()*560, 90, false);
+  for (let i=0;i<18;i++)
+    criaPredio(-1300 + i*150 + Math.random()*40, -520 - Math.random()*140,
+               100+Math.random()*50, 200+Math.random()*380, 100, false);
+  // fileira da frente bem cheia: é o "estoque" de destruição do round
+  for (let i=0;i<16;i++)
+    criaPredio(-900 + i*120 + Math.random()*24, -250 - Math.random()*60,
+               95+Math.random()*35, 170+Math.random()*260, 110, true);
+}
+montaCidade();
+
+function derrubaPredio(perto_x){
+  let vivos = predios.filter(p => !p.quebrado && p.perto);
+  if (!vivos.length) return;
+  if (perto_x != null)
+    vivos.sort((a,b) => Math.abs(a.mesh.position.x-perto_x) - Math.abs(b.mesh.position.x-perto_x));
+  const p = perto_x != null ? vivos[0] : vivos[Math.floor(Math.random()*vivos.length)];
+  p.quebrado = true; p.queda = 1;
+  ruido(0.7, 0.30, 900, 70);
+  for (let i=0;i<22;i++)
+    escombro(p.mesh.position.x + (Math.random()-0.5)*p.altura*0.4,
+             Math.random()*p.altura, p.mesh.position.z);
+}
+
+// a cidade sofre JUNTO com a luta: monstro arremessado, raio e especiais
+// derrubam o prédio da fileira da frente mais perto do ponto do impacto
+function danificaPrediosPerto(x, alcance){
+  let algum = false;
+  for (const p of predios){
+    if (p.quebrado || !p.perto) continue;
+    if (Math.abs(p.mesh.position.x - x) > alcance) continue;
+    p.quebrado = true; p.queda = 1; algum = true;
+    for (let i=0;i<18;i++)
+      escombro(p.mesh.position.x + (Math.random()-0.5)*p.altura*0.4,
+               Math.random()*p.altura, p.mesh.position.z);
+  }
+  if (algum) ruido(0.7, 0.28, 900, 70);
+  return algum;
+}
+
+/* ---------- partículas ---------- */
+const POOL = [];
+{
+  const geo = new THREE.BoxGeometry(1,1,1);
+  for (let i=0;i<240;i++){
+    const m = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ color:0xffffff }));
+    m.visible = false; scene.add(m);
+    POOL.push({ mesh:m, vida:0, vx:0, vy:0, vz:0, giro:new THREE.Vector3() });
+  }
+}
+function solta(x,y,z, cor, forca, tam, vida){
+  const p = POOL.find(q => q.vida <= 0);
+  if (!p) return null;
+  p.mesh.visible = true;
+  p.mesh.material.color.setHex(cor);
+  p.mesh.position.set(x,y,z);
+  const s = tam*(0.6+Math.random()*0.8);
+  p.mesh.scale.set(s,s,s);
+  p.vx = (Math.random()-0.5)*forca;
+  p.vy = Math.random()*forca*0.9 + forca*0.2;
+  p.vz = (Math.random()-0.5)*forca*0.6;
+  p.giro.set(Math.random()*8, Math.random()*8, Math.random()*8);
+  p.vida = vida;
+  return p;
+}
+const faisca   = (x,y,z,cor) => solta(x,y,z, cor||0xfff2a8, 420, 9, 0.75);
+const escombro = (x,y,z)     => solta(x,y,z, 0x9aa2ad,      340, 16, 1.5);
+const poeira   = (x,y,z)     => solta(x,y,z, 0xd9c9a8,      120, 11, 0.5);
+
+function atualizaParticulas(dt){
+  for (const p of POOL){
+    if (p.vida <= 0) continue;
+    p.vida -= dt;
+    p.vy -= 1500*dt;
+    p.mesh.position.x += p.vx*dt;
+    p.mesh.position.y += p.vy*dt;
+    p.mesh.position.z += p.vz*dt;
+    p.mesh.rotation.x += p.giro.x*dt;
+    p.mesh.rotation.y += p.giro.y*dt;
+    if (p.mesh.position.y < 4){ p.mesh.position.y = 4; p.vy *= -0.32; p.vx *= 0.6; p.vz *= 0.6; }
+    if (p.vida <= 0) p.mesh.visible = false;
+  }
+}
+
+/* ---------- anéis de impacto (dão peso na pancada) ---------- */
+const ANEIS = [];
+{
+  const geo = new THREE.RingGeometry(0.6, 1, 26);
+  for (let i=0;i<10;i++){
+    const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({
+      color:0xffffff, transparent:true, opacity:0, side:THREE.DoubleSide, depthWrite:false }));
+    m.visible = false; scene.add(m);
+    ANEIS.push({ mesh:m, vida:0, dur:1, tam:1, deitado:false });
+  }
+}
+function anelImpacto(x,y,z, cor, tam, deitado){
+  const a = ANEIS.find(q => q.vida <= 0);
+  if (!a) return;
+  a.mesh.visible = true;
+  a.mesh.material.color.setHex(cor);
+  a.mesh.position.set(x,y,z);
+  a.mesh.rotation.set(deitado ? -Math.PI/2 : 0, 0, 0);
+  a.vida = a.dur = deitado ? 0.6 : 0.32;
+  a.tam = tam;
+}
+function atualizaAneis(dt){
+  for (const a of ANEIS){
+    if (a.vida <= 0) continue;
+    a.vida -= dt;
+    const p = 1 - a.vida/a.dur;
+    a.mesh.scale.setScalar(a.tam*(0.25 + p*1.5));
+    a.mesh.material.opacity = Math.max(0, 0.85*(1-p));
+    if (a.vida <= 0) a.mesh.visible = false;
+  }
+}
+
+/* ================== SOM =================================== */
+let AC = null;
+function audioWake(){
+  if (!AC){ try { AC = new (window.AudioContext||window.webkitAudioContext)(); } catch(e){} }
+  if (AC && AC.state === 'suspended') AC.resume();
+}
+function tone(f, dur, tipo, vol, ate){
+  if (!AC) return;
+  const o = AC.createOscillator(), g = AC.createGain(), t = AC.currentTime;
+  o.type = tipo||'square'; o.frequency.setValueAtTime(f, t);
+  if (ate) o.frequency.exponentialRampToValueAtTime(Math.max(20,ate), t+dur);
+  g.gain.setValueAtTime(vol ?? 0.18, t);
+  g.gain.exponentialRampToValueAtTime(0.001, t+dur);
+  o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t+dur+0.02);
+}
+function ruido(dur, vol, de, ate){
+  if (!AC) return;
+  const n = Math.floor(AC.sampleRate*dur);
+  const buf = AC.createBuffer(1, n, AC.sampleRate), d = buf.getChannelData(0);
+  for (let i=0;i<n;i++) d[i] = (Math.random()*2-1)*(1-i/n);
+  const src = AC.createBufferSource(); src.buffer = buf;
+  const f = AC.createBiquadFilter(); f.type='lowpass';
+  const t = AC.currentTime;
+  f.frequency.setValueAtTime(de||1200, t);
+  f.frequency.exponentialRampToValueAtTime(Math.max(60, ate||300), t+dur);
+  const g = AC.createGain(); g.gain.setValueAtTime(vol ?? 0.25, t);
+  g.gain.exponentialRampToValueAtTime(0.001, t+dur);
+  src.connect(f); f.connect(g); g.connect(AC.destination); src.start(t);
+}
+const atraso = (ms, fn) => setTimeout(fn, ms);
+
+/* Cada monstro tem a PRÓPRIA voz: rugido, som de golpe e som do especial.
+   Godzilla é grave e rasgado, Kong é percussivo, Mothra é agudo e cintilante,
+   Rodan é um guincho de ave, Ghidorah são três tons desafinados ao mesmo tempo. */
+const VOZ = {
+  godzilla: {
+    rugido:   () => { tone(78,0.75,'sawtooth',0.20,44); ruido(0.65,0.13,420,70); },
+    golpe:    () => { ruido(0.15,0.34,1700,150); tone(115,0.13,'square',0.17,48); },
+    especial: () => { tone(760,0.65,'sawtooth',0.16,80); ruido(0.65,0.30,4200,360); },
+  },
+  kong: {
+    rugido:   () => { for (let i=0;i<4;i++) atraso(i*105, () => tone(140+i*22,0.13,'square',0.15,85));
+                      ruido(0.5,0.11,700,110); },
+    golpe:    () => { ruido(0.11,0.42,900,85); tone(88,0.15,'sine',0.22,42); },
+    especial: () => { tone(52,1.0,'sine',0.30,26); ruido(1.0,0.36,600,45); },
+  },
+  mothra: {
+    rugido:   () => { tone(880,0.20,'sine',0.13,1500); atraso(150, () => tone(1250,0.22,'sine',0.11,760)); },
+    golpe:    () => { ruido(0.08,0.17,3200,900); tone(620,0.09,'sine',0.10,980); },
+    especial: () => { for (let i=0;i<7;i++) atraso(i*52, () => tone(1350+i*170,0.15,'triangle',0.09,2300)); },
+  },
+  rodan: {
+    rugido:   () => { tone(1280,0.38,'sawtooth',0.14,400); ruido(0.3,0.11,3000,600); },
+    golpe:    () => { ruido(0.12,0.28,2400,280); tone(300,0.10,'square',0.13,115); },
+    especial: () => { ruido(0.75,0.32,300,5200); tone(190,0.65,'sawtooth',0.13,1500); },
+  },
+  ghidorah: {
+    rugido:   () => { [500,640,775].forEach((f,i) => atraso(i*85, () => tone(f,0.42,'square',0.10,f*0.45))); },
+    golpe:    () => { ruido(0.10,0.30,5200,700); tone(430,0.11,'square',0.14,170); },
+    especial: () => { [0,1,2].forEach(i => atraso(i*95, () => {
+                        tone(920+i*185,0.5,'sawtooth',0.12,110); ruido(0.42,0.20,5200,480); })); },
+  },
+};
+const SFX = {
+  swing: () => ruido(0.09,0.07,900,300),
+  jump:  () => tone(300,0.13,'sine',0.10,620),
+  ko:    () => { tone(420,0.5,'square',0.18,60); ruido(0.6,0.3,1400,90); },
+  pick:  () => tone(660,0.09,'square',0.13),
+  ready: () => tone(880,0.16,'square',0.16),
+  fight: () => tone(520,0.35,'sawtooth',0.20,900),
+};
+
+/* ================== ENTRADA ============================== */
+const held = new Set(), tapped = new Set();
+const BLOCK = ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'];
+addEventListener('keydown', e => {
+  if (BLOCK.includes(e.code)) e.preventDefault();
+  if (!e.repeat){ held.add(e.code); tapped.add(e.code); audioWake(); }
+});
+addEventListener('keyup', e => held.delete(e.code));
+addEventListener('blur', () => held.clear());
+const CONTROLS = [
+  { left:'KeyA',      right:'KeyD',       jump:'KeyW',    hit:'KeyS'      },
+  { left:'ArrowLeft', right:'ArrowRight', jump:'ArrowUp', hit:'ArrowDown' },
+];
+
+/* ============ MONSTROS ESCULPIDOS ========================
+   Modelagem própria com referência nos designs clássicos:
+   - pele: ruído de vértice + flat shading = couro rochoso
+   - crânios angulosos, mandíbula articulada (abre no especial)
+   - Ghidorah sem braços, 3 pescoços serpenteando, 2 caudas
+   - asas da Mothra pintadas em textura (padrão real da mariposa) */
+
+const grupo = (pai, x, y, z) => {
+  const g = new THREE.Group(); g.position.set(x,y,z); pai.add(g); return g;
+};
+
+function ruidoGeo(geo, amp){
+  const pos = geo.attributes.position;
+  for (let i=0;i<pos.count;i++)
+    pos.setXYZ(i, pos.getX(i)+(Math.random()-0.5)*amp,
+                  pos.getY(i)+(Math.random()-0.5)*amp,
+                  pos.getZ(i)+(Math.random()-0.5)*amp);
+  geo.computeVertexNormals();
+  return geo;
+}
+
+function parte(pai, geo, cor, o){
+  o = o || {};
+  const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({
+    color: cor, roughness: o.rug ?? 0.92, metalness: o.met ?? 0.05,
+    flatShading: !o.liso, map: o.mapa || null,
+    side: o.dupla ? THREE.DoubleSide : THREE.FrontSide }));
+  if (o.p) m.position.set(o.p[0], o.p[1], o.p[2]);
+  if (o.s) m.scale.set(o.s[0], o.s[1], o.s[2]);
+  if (o.r) m.rotation.set(o.r[0], o.r[1], o.r[2]);
+  m.castShadow = m.receiveShadow = true;
+  pai.add(m); return m;
+}
+/* bolha de carne: icosaedro (sem emenda) amassado */
+function blob(pai, cor, s, p, o){
+  o = o || {};
+  const geo = ruidoGeo(new THREE.IcosahedronGeometry(1, o.det ?? 2), o.amp ?? 0.08);
+  return parte(pai, geo, cor, Object.assign({}, o, { s, p }));
+}
+function caixa(pai, cor, s, p, o){
+  o = o || {};
+  const geo = ruidoGeo(new THREE.BoxGeometry(1,1,1,2,2,2), o.amp ?? 0.06);
+  return parte(pai, geo, cor, Object.assign({}, o, { s, p }));
+}
+function espinho(pai, cor, r, h, p, o){
+  o = o || {};
+  return parte(pai, new THREE.ConeGeometry(r, h, o.lados ?? 5), cor, Object.assign({}, o, { p }));
+}
+
+/* placa dorsal do Godzilla: recorte serrilhado tipo folha */
+function geoPlaca(){
+  const s = new THREE.Shape();
+  s.moveTo(0,0); s.lineTo(-8,9); s.lineTo(-3,11); s.lineTo(-11,22);
+  s.lineTo(-2,23); s.lineTo(-5,36); s.lineTo(4,25); s.lineTo(11,29);
+  s.lineTo(9,16); s.lineTo(16,13); s.lineTo(8,7); s.lineTo(12,0);
+  s.closePath();
+  return new THREE.ExtrudeGeometry(s, { depth:3, bevelEnabled:true,
+    bevelThickness:1.4, bevelSize:1.4, bevelSegments:1 });
+}
+const GEO_PLACA = geoPlaca();
+
+/* asa da Mothra: silhueta de mariposa + padrão PINTADO (textura canvas) */
+function asaMothra(){
+  const s = new THREE.Shape();
+  s.moveTo(4, 0);
+  s.bezierCurveTo(30, 55, 5, 105, -50, 112);
+  s.bezierCurveTo(-95, 116, -112, 72, -90, 44);
+  s.bezierCurveTo(-142, 62, -186, 36, -180, 4);
+  s.bezierCurveTo(-174, -24, -122, -20, -72, -8);
+  s.bezierCurveTo(-32, -12, -2, -8, 4, 0);
+  s.closePath();
+  const geo = new THREE.ShapeGeometry(s, 14);
+  // UV = posição normalizada dentro da caixa da asa (pra textura casar)
+  geo.computeBoundingBox();
+  const bb = geo.boundingBox, pos = geo.attributes.position, uv = [];
+  for (let i=0;i<pos.count;i++){
+    uv.push((pos.getX(i)-bb.min.x)/(bb.max.x-bb.min.x),
+            (pos.getY(i)-bb.min.y)/(bb.max.y-bb.min.y));
+  }
+  geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+
+  const c = document.createElement('canvas'); c.width = c.height = 256;
+  const g = c.getContext('2d');
+  const X = x => (x-bb.min.x)/(bb.max.x-bb.min.x)*256;      // mesmo espaço da shape
+  const Y = y => (y-bb.min.y)/(bb.max.y-bb.min.y)*256;
+  g.fillStyle = '#e2b96a'; g.fillRect(0,0,256,256);          // base caramelo
+  // borda preta acompanhando o CONTORNO externo (traço, não mancha)
+  g.strokeStyle = '#221a10'; g.lineWidth = 30; g.lineCap = 'round';
+  g.beginPath(); g.moveTo(X(4),Y(0));
+  g.bezierCurveTo(X(30),Y(55), X(5),Y(105), X(-50),Y(112));
+  g.bezierCurveTo(X(-95),Y(116), X(-112),Y(72), X(-90),Y(44));
+  g.stroke();
+  g.beginPath(); g.moveTo(X(-90),Y(44));
+  g.bezierCurveTo(X(-142),Y(62), X(-186),Y(36), X(-180),Y(4));
+  g.stroke();
+  const olho = (x,y,r) => {
+    g.fillStyle = '#221a10'; g.beginPath(); g.arc(X(x),Y(y),r*1.3,0,7); g.fill();
+    g.fillStyle = '#e07820'; g.beginPath(); g.arc(X(x),Y(y),r,0,7); g.fill();
+    g.fillStyle = '#f3c95e'; g.beginPath(); g.arc(X(x),Y(y),r*0.42,0,7); g.fill();
+  };
+  olho(-48, 62, 22); olho(-140, 12, 14);
+  g.strokeStyle = '#a03a20'; g.lineWidth = 6;                 // riscos vermelhos na raiz
+  g.beginPath(); g.moveTo(X(0),Y(16)); g.quadraticCurveTo(X(-40),Y(26), X(-72),Y(30)); g.stroke();
+  g.beginPath(); g.moveTo(X(-4),Y(-2)); g.quadraticCurveTo(X(-50),Y(-6), X(-100),Y(-10)); g.stroke();
+  const tex = new THREE.CanvasTexture(c);
+  return { geo, tex };
+}
+
+/* asa de couro (Rodan/Ghidorah): membrana recortada + "dedos" ósseos */
+function asaCouro(comp, larg){
+  const s = new THREE.Shape();
+  s.moveTo(0, 3);
+  s.quadraticCurveTo(-comp*0.45, larg*1.05, -comp, larg*0.50);
+  s.quadraticCurveTo(-comp*0.80, larg*0.16, -comp*0.62, larg*0.20);
+  s.quadraticCurveTo(-comp*0.46, -larg*0.02, -comp*0.32, larg*0.04);
+  s.quadraticCurveTo(-comp*0.16, -larg*0.10, 0, -6);
+  s.closePath();
+  return new THREE.ExtrudeGeometry(s, { depth:3.5, bevelEnabled:true,
+    bevelThickness:1.2, bevelSize:1.2, bevelSegments:1 });
+}
+function montaAsa(flap, geo, cor, lz, o){
+  o = o || {};
+  const m = parte(flap, geo, cor, { dupla:true, rug:o.rug ?? 0.85, met:o.met ?? 0.05,
+                                    liso:true, mapa:o.mapa });
+  if (o.mapa){
+    m.material.emissive = new THREE.Color(0x8a7f5e);
+    m.material.emissiveMap = o.mapa;
+    m.material.emissiveIntensity = 0.55;
+  }
+  m.rotation.x = -Math.PI/2;
+  m.scale.y = -lz;
+  if (o.mapa) m.userData.fixo = true;      // não deixa o brilho de fúria apagar a pintura
+  // dedos ósseos por cima da membrana
+  if (o.dedos){
+    for (const [ang, c2] of o.dedos){
+      const d = parte(flap, new THREE.CylinderGeometry(2.6, 1.6, c2, 6), o.corDedo || cor,
+                      { liso:true, rug:0.8 });
+      d.position.set(-Math.cos(ang)*c2/2, 4, lz*Math.sin(ang)*c2/2);
+      d.rotation.z = Math.PI/2 - 0;
+      d.rotation.y = -lz*ang;
+      d.rotation.z = Math.PI/2;
+    }
+  }
+  return m;
+}
+
+function olhos(pai, cor, r, x, y, z, o){
+  o = o || {};
+  for (const lz of [1,-1]){
+    const e = parte(pai, new THREE.SphereGeometry(r, 10, 8), cor,
+                    { liso:true, rug:0.3, p:[x, y, lz*z] });
+    e.material.emissive = new THREE.Color(o.brilho || 0x000000);
+    e.userData.fixo = true;
+    if (!o.semPupila){
+      const p = parte(pai, new THREE.SphereGeometry(r*0.45, 8, 6), 0x0a0a0a,
+                      { liso:true, p:[x + r*0.62, y, lz*(z + r*0.28)] });
+      p.userData.fixo = true;
+    }
+  }
+}
+
+/* ---------------- os cinco titãs ---------------- */
+function criaMonstro(base, trocaCor){
+  const root = new THREE.Group();
+  const M = { root, id:base.id, voa:base.voa, mixer:null };
+  const T = trocaCor ? new THREE.Color(PALETA_P2[base.id] || 0x8888aa) : null;
+  const cor = c => {                       // recolore o P2 se os dois forem iguais
+    if (!T) return c;
+    return new THREE.Color(c).lerp(T, 0.55).getHex();
+  };
+
+  if (base.id === 'godzilla'){
+    const PELE = cor(0x3f5a40), PELE2 = cor(0x2e4230),
+          BARRIGA = cor(0x9aa07c), PLACA = cor(0xe8e4c8);
+    M.alturaSeta = 285;
+    M.pernaA = grupo(root, 4, 96,  30); M.pernaB = grupo(root, 4, 96, -30);
+    for (const g of [M.pernaA, M.pernaB]){
+      blob(g, PELE, [25,36,27], [0,-18,0]);
+      blob(g, PELE, [19,28,21], [4,-56,0]);
+      blob(g, PELE2, [24,12,29], [8,-88,0]);
+      for (let i=-1;i<=1;i++) espinho(g, PLACA, 5, 15, [30,-92,i*12], { r:[0,0,-Math.PI/2] });
+    }
+    M.corpo = grupo(root, 0, 96, 0);
+    blob(M.corpo, PELE, [42,34,38], [-2,4,0]);            // pélvis
+    blob(M.corpo, PELE, [46,54,42], [2,44,0]);            // barrigão
+    blob(M.corpo, PELE, [48,44,44], [4,90,0]);            // peito
+    for (let i=0;i<6;i++)                                  // escamas da barriga
+      caixa(M.corpo, BARRIGA, [10,13,30-i*2.5], [32-i*1.5, 16+i*15, 0], { amp:0.12 });
+    blob(M.corpo, PELE, [22,26,24], [6,124,0]);           // pescoço
+    // três fileiras de placas dorsais serrilhadas
+    for (const [dz, esc] of [[0,1],[15,0.55],[-15,0.55]])
+      for (let i=0;i<6;i++){
+        const t2 = i/5;
+        const p = parte(M.corpo, GEO_PLACA, PLACA,
+          { p:[-20 - i*9 - (esc<1?3:0), 128 - i*20, dz], rug:0.75 });
+        const e2 = esc*(1.35 - Math.abs(t2-0.4));
+        p.scale.set(e2, e2, esc);
+        p.rotation.z = -0.5 - t2*0.5;
+      }
+    M.cabeca = grupo(M.corpo, 8, 144, 0);
+    caixa(M.cabeca, PELE, [36,24,28], [0,6,0]);           // crânio
+    caixa(M.cabeca, PELE2, [22,7,30], [10,17,0]);         // sobrancelha pesada
+    caixa(M.cabeca, PELE, [26,13,21], [22,2,0]);          // focinho
+    for (const lz of [8,-8]) for (let i=0;i<4;i++)
+      espinho(M.cabeca, 0xf5f0dc, 1.9, 5.5, [14+i*6, -4, lz], { r:[Math.PI,0,0], liso:true });
+    M.mand = grupo(M.cabeca, 4, -5, 0);
+    caixa(M.mand, PELE2, [30,7,18], [14,-3,0]);
+    for (const lz of [6,-6]) for (let i=0;i<3;i++)
+      espinho(M.mand, 0xf5f0dc, 1.8, 5, [16+i*7, 1, lz], { liso:true });
+    olhos(M.cabeca, 0xffcf5e, 3.4, 17, 9, 12, { brilho:0x3a2b00 });
+    M.bracoA = grupo(M.corpo, 12, 92,  42); M.bracoB = grupo(M.corpo, 12, 92, -42);
+    for (const g of [M.bracoA, M.bracoB]){
+      blob(g, PELE, [13,24,13], [0,-12,0]);
+      blob(g, PELE, [11,20,11], [3,-38,0]);
+      blob(g, PELE2, [12,9,11], [6,-52,0]);
+      for (let i=-1;i<=1;i++) espinho(g, PLACA, 3, 10, [12,-56,i*7], { r:[0,0,-Math.PI/2] });
+    }
+    M.cauda = [];
+    let pai = grupo(M.corpo, -34, 14, 0);
+    for (let i=0;i<7;i++){
+      const g = grupo(pai, i===0?0:-26, i===0?0:-1, 0);
+      blob(g, i%2 ? PELE2 : PELE, [21-i*2.6, 15-i*1.8, 16-i*2], [-13,0,0], { det:1 });
+      if (i<4){
+        const p = parte(g, GEO_PLACA, PLACA, { p:[-13, 10-i, 0], rug:0.75 });
+        p.scale.setScalar(0.4 - i*0.07); p.rotation.z = -0.4;
+      }
+      M.cauda.push(g); pai = g;
+    }
+  }
+
+  if (base.id === 'kong'){
+    const PELO = cor(0x4a3527), PELO2 = cor(0x33241a), PELE = cor(0x8a705c);
+    M.alturaSeta = 260;
+    M.pernaA = grupo(root, 4, 82,  27); M.pernaB = grupo(root, 4, 82, -27);
+    for (const g of [M.pernaA, M.pernaB]){
+      blob(g, PELO, [23,32,25], [0,-16,0], { amp:0.13 });
+      blob(g, PELO, [18,26,20], [4,-52,0], { amp:0.13 });
+      blob(g, PELE, [22,11,26], [8,-76,0]);
+    }
+    M.corpo = grupo(root, 0, 82, 0);
+    blob(M.corpo, PELO, [38,30,34], [-2,2,0], { amp:0.13 });
+    blob(M.corpo, PELO, [44,50,40], [0,38,0], { amp:0.13 });   // tronco
+    blob(M.corpo, PELO, [52,42,46], [4,80,0], { amp:0.13 });   // peitoral enorme
+    blob(M.corpo, PELE, [30,34,12], [30,52,0], { amp:0.06 });  // peito pelado
+    blob(M.corpo, PELO2, [22,17,22], [-2,102,  42], { amp:0.15 });  // ombros
+    blob(M.corpo, PELO2, [22,17,22], [-2,102, -42], { amp:0.15 });
+    M.cabeca = grupo(M.corpo, 6, 122, 0);
+    blob(M.cabeca, PELO, [21,23,20], [0,4,0], { amp:0.12 });
+    espinho(M.cabeca, PELO2, 12, 20, [-6,24,0], { r:[0,0,0.5], lados:6 });  // crista sagital
+    caixa(M.cabeca, PELE, [16,17,20], [14,-2,0], { amp:0.05 });             // face
+    caixa(M.cabeca, PELO2, [14,6,24], [10,12,0]);                           // sobrancelha
+    blob(M.cabeca, PELE, [11,8,13], [20,-11,0], { amp:0.04 });              // focinho
+    M.mand = grupo(M.cabeca, 6, -12, 0);
+    caixa(M.mand, PELE, [18,7,16], [10,-2,0], { amp:0.04 });
+    espinho(M.mand, 0xf5f0dc, 2.2, 6, [14, 2,  6], { liso:true });
+    espinho(M.mand, 0xf5f0dc, 2.2, 6, [14, 2, -6], { liso:true });
+    olhos(M.cabeca, 0xd8c090, 3.2, 16, 6, 8);
+    M.bracoA = grupo(M.corpo, 8, 96,  46); M.bracoB = grupo(M.corpo, 8, 96, -46);
+    for (const g of [M.bracoA, M.bracoB]){
+      blob(g, PELO, [16,32,16], [0,-18,0], { amp:0.14 });
+      blob(g, PELO, [14,30,14], [3,-54,0], { amp:0.14 });
+      blob(g, PELE, [17,14,16], [6,-82,0]);                   // punhão
+    }
+  }
+
+  if (base.id === 'mothra'){
+    const PELO = cor(0xe8d3a0), LISTRA = cor(0x6e4526), ASA = cor(0xffffff);
+    M.alturaSeta = 230;
+    M.pernaA = grupo(root, 4, 60,  16); M.pernaB = grupo(root, 4, 60, -16);
+    for (const g of [M.pernaA, M.pernaB]){
+      blob(g, LISTRA, [8,22,8], [0,-14,0], { amp:0.1 });
+      blob(g, 0x5a3c22, [9,6,10], [3,-34,0]);
+    }
+    M.corpo = grupo(root, 0, 60, 0);
+    for (let i=0;i<5;i++)                                     // abdômen listrado felpudo
+      blob(M.corpo, i%2 ? LISTRA : PELO, [31-i*1.5, 17, 30-i*1.5], [-(i*5), 10+i*24, 0],
+           { amp:0.16, det:2 });
+    blob(M.corpo, PELO, [24,16,23], [4,116,0], { amp:0.2 });  // colarinho felpudo
+    M.cabeca = grupo(M.corpo, 8, 128, 0);
+    blob(M.cabeca, PELO, [16,14,15], [0,0,0], { amp:0.14 });
+    olhos(M.cabeca, 0x2f6fd0, 8.5, 8, 2, 9, { brilho:0x122c55, semPupila:true });
+    M.antena = [];
+    for (const lz of [10,-10]){
+      const g = grupo(M.cabeca, 4, 10, lz);
+      parte(g, new THREE.CylinderGeometry(1.1, 1.6, 26, 5), LISTRA, { p:[0,13,0], liso:true });
+      for (let i=0;i<4;i++)
+        espinho(g, LISTRA, 0.9, 7, [0, 6+i*5, lz>0?3:-3], { r:[lz>0?-1.2:1.2,0,0], liso:true });
+      g.rotation.z = -0.55; g.rotation.x = lz>0 ? 0.25 : -0.25;
+      M.antena.push(g);
+    }
+    const { geo, tex } = asaMothra();
+    M.asas = [];
+    for (const lz of [1,-1]){
+      const varre = grupo(M.corpo, -20, 88, lz*12);
+      varre.rotation.set(-lz*1.05, lz*0.40, 0.30);
+      const flap = grupo(varre, 0, 0, 0);
+      montaAsa(flap, geo, ASA, lz, { mapa:tex, rug:0.9 });
+      M.asas.push({ g:flap, lz });
+    }
+    M.bracoA = grupo(M.corpo, 10, 92,  18); M.bracoB = grupo(M.corpo, 10, 92, -18);
+    for (const g of [M.bracoA, M.bracoB]) blob(g, LISTRA, [6,14,6], [0,-8,0], { amp:0.1 });
+  }
+
+  if (base.id === 'rodan'){
+    const PELE = cor(0x8a4a38), PELE2 = cor(0x5f3226), PEITO = cor(0xc9a06a);
+    M.alturaSeta = 250;
+    M.pernaA = grupo(root, 4, 74,  22); M.pernaB = grupo(root, 4, 74, -22);
+    for (const g of [M.pernaA, M.pernaB]){
+      blob(g, PELE, [12,26,12], [0,-14,0], { amp:0.1 });
+      blob(g, PELE2, [9,20,9], [3,-42,0], { amp:0.1 });
+      blob(g, PEITO, [11,6,12], [5,-58,0]);
+      for (let i=-1;i<=1;i++) espinho(g, PEITO, 2.6, 9, [14,-60,i*6], { r:[0,0,-Math.PI/2], liso:true });
+    }
+    M.corpo = grupo(root, 0, 74, 0);
+    blob(M.corpo, PELE, [30,28,28], [-4,4,0]);
+    blob(M.corpo, PELE, [34,48,32], [0,44,0]);
+    // esterno espinhoso icônico
+    for (let i=0;i<5;i++)
+      espinho(M.corpo, PEITO, 4.5-i*0.5, 13-i, [30-i, 22+i*16, 0], { r:[0,0,-Math.PI/2], liso:true });
+    blob(M.corpo, PELE, [15,22,15], [8,96,0]);              // pescoço
+    M.cabeca = grupo(M.corpo, 12, 116, 0);
+    blob(M.cabeca, PELE, [16,14,15], [0,2,0]);
+    // bico comprido + mandíbula
+    espinho(M.cabeca, PEITO, 7, 36, [30,0,0], { r:[0,0,-Math.PI/2], liso:true, lados:6 });
+    M.mand = grupo(M.cabeca, 8, -6, 0);
+    espinho(M.mand, cor(0xb08a54), 5, 26, [20,-1,0], { r:[0,0,-Math.PI/2], liso:true, lados:6 });
+    // os DOIS chifres pra trás (marca registrada)
+    espinho(M.cabeca, PEITO, 4.5, 30, [-10, 12,  7], { r:[0.5,0,2.2], liso:true });
+    espinho(M.cabeca, PEITO, 4.5, 30, [-10, 12, -7], { r:[-0.5,0,2.2], liso:true });
+    espinho(M.cabeca, PEITO, 3, 20, [-12, 8, 0], { r:[0,0,2.4], liso:true });
+    olhos(M.cabeca, 0xffcf5e, 3, 12, 6, 10, { brilho:0x3a2b00 });
+    const geoA = asaCouro(185, 105);
+    M.asas = [];
+    for (const lz of [1,-1]){
+      const varre = grupo(M.corpo, -4, 88, lz*14);
+      varre.rotation.set(-lz*1.0, lz*0.35, 0.28);
+      const flap = grupo(varre, 0, 0, 0);
+      montaAsa(flap, geoA, PELE, lz, { rug:0.88 });
+      M.asas.push({ g:flap, lz });
+    }
+    M.bracoA = grupo(M.corpo, 8, 84,  18); M.bracoB = grupo(M.corpo, 8, 84, -18);
+    M.cauda = [];
+    let pai = grupo(M.corpo, -26, 10, 0);
+    for (let i=0;i<3;i++){
+      const g = grupo(pai, i===0?0:-20, 0, 0);
+      blob(g, PELE2, [11-i*2.5, 8-i*1.6, 8-i*1.6], [-10,0,0], { det:1 });
+      M.cauda.push(g); pai = g;
+    }
+  }
+
+  if (base.id === 'ghidorah'){
+    const OURO = cor(0xd8b04a), OURO2 = cor(0xa8801f), MEMB = cor(0xc79a35);
+    const MT = { met:0.7, rug:0.38 };
+    M.alturaSeta = 320;
+    M.pernaA = grupo(root, 4, 90,  30); M.pernaB = grupo(root, 4, 90, -30);
+    for (const g of [M.pernaA, M.pernaB]){
+      blob(g, OURO, [22,32,24], [0,-16,0], MT);
+      blob(g, OURO, [17,26,18], [4,-52,0], MT);
+      blob(g, OURO2, [21,11,26], [8,-82,0], MT);
+      for (let i=-1;i<=1;i++) espinho(g, 0xf0e6b8, 4, 13, [26,-86,i*10], { r:[0,0,-Math.PI/2], liso:true });
+    }
+    M.corpo = grupo(root, 0, 90, 0);
+    blob(M.corpo, OURO, [40,32,36], [-2,2,0], MT);
+    blob(M.corpo, OURO, [42,46,38], [0,40,0], MT);
+    blob(M.corpo, OURO, [40,36,38], [4,76,0], MT);
+    for (let i=0;i<5;i++)
+      caixa(M.corpo, OURO2, [9,11,26-i*2], [30-i, 16+i*14, 0], Object.assign({ amp:0.1 }, MT));
+    // SEM braços (fiel ao original): grupos vazios só pra animação não quebrar
+    M.bracoA = grupo(M.corpo, 0, 0, 0); M.bracoB = grupo(M.corpo, 0, 0, 0);
+    // três pescoços longos serpenteando, cada um com coroa de chifres
+    M.cabecas = [];
+    for (const ang of [0, 0.85, -0.85]){
+      const p = grupo(M.corpo, 2, 96, 0);
+      p.rotation.y = ang;
+      const segs = [];
+      let pai = p;
+      // curva em S: os primeiros gomos sobem quase na vertical, depois
+      // o pescoço se debruça pra frente — postura clássica do Ghidorah
+      const passos = [[4,9],[7,12],[9,11],[11,10],[12,8],[12,7]];
+      for (let i=0;i<6;i++){
+        const [dx,dy] = passos[i];
+        const g = grupo(pai, dx, dy, 0);
+        blob(g, i%2 ? OURO2 : OURO, [15-i*0.5, 14-i*0.5, 14-i*0.5], [2,3,0],
+             Object.assign({ det:1 }, MT));
+        segs.push(g); pai = g;
+      }
+      const cab = grupo(pai, 18, 10, 0);
+      cab.scale.setScalar(1.8);
+      blob(cab, OURO, [14,11,11], [0,0,0], MT);
+      caixa(cab, OURO, [14,7,9], [12,-2,0], Object.assign({ amp:0.05 }, MT));
+      const mand = grupo(cab, 4, -5, 0);
+      caixa(mand, OURO2, [14,4,8], [10,-2,0], Object.assign({ amp:0.05 }, MT));
+      // coroa de chifres
+      for (const [rx, rz, s2] of [[0,0.9,1],[0.55,0.7,0.8],[-0.55,0.7,0.8],
+                                  [1.0,0.4,0.65],[-1.0,0.4,0.65]])
+        espinho(cab, 0xf0e6b8, 3.2*s2, 21*s2, [-6, 9, 0], { r:[rx,0,rz], liso:true });
+      olhos(cab, 0xff2b1f, 2.6, 8, 2, 6, { brilho:0x7a0c06 });
+      M.cabecas.push({ pescoco:p, segs, cab, mand, ang });
+    }
+    // duas caudas com leque de espinhos na ponta
+    M.cauda = [];
+    for (const lz of [1,-1]){
+      let pai = grupo(M.corpo, -30, 8, lz*16);
+      for (let i=0;i<5;i++){
+        const g = grupo(pai, i===0?0:-22, 0, 0);
+        blob(g, i%2 ? OURO2 : OURO, [13-i*2, 9-i*1.3, 9-i*1.3], [-11,0,0],
+             Object.assign({ det:1 }, MT));
+        if (i===4) for (const a of [-0.7,0,0.7])
+          espinho(g, 0xf0e6b8, 2.2, 12, [-20,0,0], { r:[a,0,1.8], liso:true });
+        M.cauda.push(g); pai = g;
+      }
+    }
+    // asas-leque gigantes
+    const geoA = asaCouro(240, 150);
+    M.asas = [];
+    for (const lz of [1,-1]){
+      const varre = grupo(M.corpo, -6, 84, lz*20);
+      varre.rotation.set(-lz*1.15, lz*0.30, 0.40);
+      const flap = grupo(varre, 0, 0, 0);
+      montaAsa(flap, geoA, MEMB, lz, { met:0.55, rug:0.5 });
+      M.asas.push({ g:flap, lz });
+    }
+  }
+
+  // sombra, anel do jogador e setinha
+  const disco = new THREE.Mesh(new THREE.CircleGeometry(52, 20),
+    new THREE.MeshBasicMaterial({ color:0x000000, transparent:true, opacity:0.32 }));
+  disco.rotation.x = -Math.PI/2;
+  M.disco = disco; scene.add(disco);
+  const anel = new THREE.Mesh(new THREE.RingGeometry(56, 70, 28),
+    new THREE.MeshBasicMaterial({ color:0xffd873, transparent:true, opacity:0.85,
+                                  side:THREE.DoubleSide }));
+  anel.rotation.x = -Math.PI/2;
+  M.anel = anel; scene.add(anel);
+  const seta = new THREE.Mesh(new THREE.ConeGeometry(20, 30, 4),
+    new THREE.MeshBasicMaterial({ color:0xffd873 }));
+  seta.rotation.x = Math.PI;
+  M.seta = seta; scene.add(seta);
+  scene.add(root);
+  return M;
+}
+
+/* soco com preparação: recua, dispara, recolhe */
+function curvaSoco(p){
+  if (p < 0.30) return -0.40*(p/0.30);
+  if (p < 0.55) return -0.40 + 2.70*((p-0.30)/0.25);
+  return 2.30*(1 - (p-0.55)/0.45);
+}
+
+/* pose por estado — e = {andando,noChao,golpe,gp,sopro,ko,reage,espelho,vitoria,derrota} */
+function poseMonstro(M, t, e){
+  const bal = e.andando ? Math.sin(t*11) : 0;
+  const resp = Math.sin(t*2.4);
+
+  const bF = e.espelho ? M.bracoB : M.bracoA;
+  const bT = e.espelho ? M.bracoA : M.bracoB;
+  const pF = e.espelho ? M.pernaB : M.pernaA;
+  const pT = e.espelho ? M.pernaA : M.pernaB;
+
+  pF.rotation.z = bal*0.5 + (e.noChao ? 0 : 0.35);
+  pT.rotation.z = -bal*0.5 + (e.noChao ? 0 : 0.30);
+  M.corpo.position.y = M.corpo.userData.y0 ?? (M.corpo.userData.y0 = M.corpo.position.y);
+  M.corpo.position.y = M.corpo.userData.y0 + (e.andando ? Math.abs(bal)*5 : resp*2.5);
+
+  const soco = e.golpe ? curvaSoco(e.gp) : 0;
+  const lunge = e.golpe ? Math.sin(e.gp*Math.PI) : 0;
+  bF.rotation.z = -bal*0.35 - soco;
+  bT.rotation.z =  bal*0.35 - soco*0.25 - (e.vitoria ? 2.4 + Math.sin(t*6)*0.3 : 0);
+  if (e.vitoria) bF.rotation.z = -2.4 - Math.sin(t*6)*0.3;
+  if (e.derrota){ bF.rotation.z = 0.15; bT.rotation.z = -0.15; }
+
+  M.corpo.rotation.z = -lunge*0.3 + (e.derrota ? 0.18 : 0) + resp*0.015;
+  M.corpo.rotation.y = e.golpe ? Math.sin(e.gp*Math.PI)*0.35 : 0;
+  if (e.reage > 0) M.corpo.rotation.z = 0.3;
+
+  if (M.cabeca){
+    M.cabeca.rotation.z = e.sopro ? -0.35 : (e.derrota ? 0.4 : -resp*0.04);
+    if (e.vitoria) M.cabeca.rotation.z = -0.5;
+  }
+  if (M.mand) M.mand.rotation.z =
+    (e.sopro || e.vitoria) ? 0.55 : e.golpe ? 0.35 : Math.max(0, resp*0.06);
+
+  if (M.cauda) M.cauda.forEach((g,i) => {
+    g.rotation.y = Math.sin(t*2.6 - i*0.6)*0.22;
+    g.rotation.z = Math.sin(t*1.8 - i*0.5)*0.07;
+  });
+  if (M.antena) M.antena.forEach((g,i) => {
+    g.rotation.z = -0.55 + Math.sin(t*4 + i)*0.2 - soco*0.2;
+  });
+  if (M.asas){
+    const rapido = e.andando || !e.noChao || e.sopro;
+    const bate = Math.sin(t*(rapido ? 12 : 5.5));
+    for (const a of M.asas) a.g.rotation.x = -a.lz*bate*(rapido ? 0.40 : 0.22);
+  }
+  if (M.cabecas) M.cabecas.forEach((h,i) => {
+    // pescoços serpenteando; no sopro os três apontam pra frente
+    const alvoY = e.sopro ? h.ang*0.25 : h.ang;
+    h.pescoco.rotation.y = alvoY + (e.sopro ? 0 : Math.sin(t*1.6 + i*2.1)*0.16);
+    h.segs.forEach((s,j) => {
+      s.rotation.z = Math.sin(t*2.4 + i*2 + j*0.7)*(e.sopro ? 0.04 : 0.10) +
+                     (e.sopro ? -0.06 : 0.06);
+      s.rotation.y = Math.sin(t*1.7 + i*1.3 + j*0.5)*(e.sopro ? 0.03 : 0.08);
+    });
+    h.cab.rotation.z = e.sopro ? 0.15 : Math.sin(t*3 + i*1.6)*0.10 + (e.derrota ? 0.5 : 0);
+    h.mand.rotation.z = (e.sopro || e.vitoria) ? 0.6 : Math.max(0, Math.sin(t*2.8+i)*0.08);
+  });
+}
+
+function animaLutador(l, dt){
+  poseMonstro(l.M, l.t, {
+    andando: l.andando && l.noChao, noChao: l.noChao,
+    golpe: l.golpe, gp: l.gp,
+    sopro: l.sopro > 0 || l.trava > 0 || l.dash > 0,
+    ko: l.ko, reage: l.reage, espelho: l.dir < 0,
+  });
+}
+function animaPose(M, t, pose){
+  poseMonstro(M, t, {
+    andando: pose === 'anda', noChao: true, golpe: null, gp: 0,
+    sopro: false, ko: 0, reage: 0, espelho: false,
+    vitoria: pose === 'sim', derrota: pose === 'nao',
+  });
+}
+
+/* ================== PROJÉTEIS ============================ */
+const projeteis = [];
+function novoProjetil(cfg){
+  const m = new THREE.Mesh(cfg.geo, cfg.mat);
+  m.position.set(cfg.x, cfg.y, cfg.z || 0);
+  scene.add(m);
+  const luz = cfg.luz ? new THREE.PointLight(cfg.luz, 1.6, 420) : null;
+  if (luz) scene.add(luz);
+  projeteis.push({ mesh:m, luz, x:cfg.x, y:cfg.y, z:cfg.z||0, vx:cfg.vx, vy:cfg.vy||0,
+                   grav:cfg.grav||0, dano:cfg.dano, dono:cfg.dono, vida:cfg.vida,
+                   raio:cfg.raio||40, cor:cfg.cor||0xffffff, chao:!!cfg.chao,
+                   cresce:cfg.cresce||0, acertou:false });
+}
+function matarProjetil(p){
+  scene.remove(p.mesh);
+  if (p.luz) scene.remove(p.luz);
+  const i = projeteis.indexOf(p);
+  if (i >= 0) projeteis.splice(i, 1);
+}
+function atualizaProjeteis(dt){
+  for (let i = projeteis.length-1; i >= 0; i--){
+    const p = projeteis[i];
+    p.vida -= dt;
+    p.vy -= p.grav*dt;
+    p.x += p.vx*dt; p.y += p.vy*dt;
+    p.mesh.position.set(p.x, p.y, p.z);
+    p.mesh.rotation.z += dt*6;
+    if (p.cresce) p.mesh.scale.setScalar(1 + (1 - p.vida)*p.cresce);
+    if (p.luz) p.luz.position.set(p.x, p.y + 20, p.z + 40);
+    if (p.chao && Math.random() < 0.6) poeira(p.x, 8, (Math.random()-0.5)*120);
+    if (p.chao && Math.random() < 0.30) danificaPrediosPerto(p.x, 100);  // a onda sísmica racha a rua
+
+    const alvo = lutadores.find(l => l !== p.dono);
+    if (alvo && !p.acertou && alvo.ko <= 0 &&
+        Math.abs(alvo.x - p.x) < p.raio + 46 &&
+        p.y > alvo.y - 20 && p.y < alvo.y + 200){
+      p.acertou = true;
+      alvo.leva(p.dano, p.dono, p.cor);
+      matarProjetil(p); continue;
+    }
+    // escama que cai do céu esmaga o prédio onde aterrissa
+    if (!p.chao && p.grav && p.y < 30){
+      danificaPrediosPerto(p.x, 90);
+      anelImpacto(p.x, 8, 0, p.cor, 30, true);
+      matarProjetil(p); continue;
+    }
+    if (p.vida <= 0 || Math.abs(p.x) > 1600) matarProjetil(p);
+  }
+}
+
+/* ================== LUTADOR ============================== */
+const GEO_ESCAMA = new THREE.OctahedronGeometry(16);
+const GEO_ONDA   = new THREE.TorusGeometry(46, 13, 8, 18);
+
+class Lutador {
+  constructor(idx, base, trocaCor, x){
+    this.idx = idx;
+    this.char = base;
+    this.voz = VOZ[base.id];
+    this.ctrl = CONTROLS[idx];
+    this.M = criaMonstro(base, trocaCor);
+    this.corJog = idx === 0 ? 0xffd873 : 0x59a5ff;
+    this.M.anel.material.color.setHex(this.corJog);
+    this.M.seta.material.color.setHex(this.corJog);
+    this.x = x; this.y = 0; this.vx = 0; this.vy = 0;
+    this.dir = idx === 0 ? 1 : -1;
+    this.hp = TUNING.maxHp; this.fury = 0; this.pontos = 0;
+    this.t = Math.random()*10;
+    this.noChao = true;
+    this.golpe = null; this.gp = 0; this.jaAcertou = false;
+    this.sopro = 0; this.trava = 0; this.dash = 0;
+    this.ko = 0; this.piscar = 0; this.reage = 0; this.andando = false;
+    this.feixes = [];
+
+    // Ghidorah dispara 3 feixes juntos: cada um mais fino e translúcido,
+    // senão o brilho aditivo dos três vira uma faixa branca só
+    const fino = base.especial === 'triplo';
+    const g = new THREE.CylinderGeometry(fino ? 9 : 15, fino ? 14 : 24, 1000, 12, 1, true);
+    g.rotateZ(Math.PI/2);
+    this.raioGeo = g;
+    this.raioOpacidade = fino ? 0.55 : 0.9;
+    this.raioMeshes = [];
+    this.raioLuz = new THREE.PointLight(0x9df3ff, 0, 900);
+    scene.add(this.raioLuz);
+  }
+
+  corRaio(){ return this.char.id === 'ghidorah' ? 0xffe14d : 0x9df3ff; }
+
+  garanteRaios(n){
+    while (this.raioMeshes.length < n){
+      const m = new THREE.Mesh(this.raioGeo, new THREE.MeshBasicMaterial({
+        color:this.corRaio(), transparent:true, opacity:this.raioOpacidade,
+        blending:THREE.AdditiveBlending, side:THREE.DoubleSide, depthWrite:false }));
+      m.visible = false; scene.add(m); this.raioMeshes.push(m);
+    }
+  }
+
+  get caixa(){ return { x1:this.x-46, x2:this.x+46, y1:this.y, y2:this.y+200 }; }
+
+  get golpeAtivo(){
+    if (!this.golpe) return false;
+    if (this.golpe === 'voadora') return this.gp > 0.10 && this.gp < 0.80;
+    return this.gp > 0.30 && this.gp < 0.60;
+  }
+  get danoGolpe(){
+    return this.golpe === 'investida' ? TUNING.danoInvestida
+         : this.golpe === 'voadora'   ? TUNING.danoVoadora
+         : TUNING.danoSoco;
+  }
+  // alcance e altura mudam por golpe — a voadora bate mais embaixo, a
+  // investida alcança mais longe
+  get caixaGolpe(){
+    const f = this.dir;
+    let ini = 26, fim = 150, baixo = this.y + 20, alto = this.y + 175;
+    if (this.golpe === 'investida'){ fim = 190; baixo = this.y + 10; alto = this.y + 185; }
+    if (this.golpe === 'voadora')  { ini = 6; fim = 155; baixo = this.y - 60; alto = this.y + 150; }
+    return { x1: f>0 ? this.x+ini : this.x-fim, x2: f>0 ? this.x+fim : this.x-ini,
+             y1: baixo, y2: alto };
+  }
+
+  duracaoGolpe(){
+    return this.golpe === 'investida' ? 0.42 : this.golpe === 'voadora' ? 0.55 : 0.30;
+  }
+
+  tentaGolpe(){
+    if (this.golpe || this.sopro > 0 || this.trava > 0 || this.dash > 0) return;
+    if (this.fury >= 100){ this.usaEspecial(); return; }
+    if (!this.noChao)          this.golpe = 'voadora';
+    else if (this.andandoPraFrente) this.golpe = 'investida';
+    else                       this.golpe = 'soco';
+    this.gp = 0; this.jaAcertou = false;
+    SFX.swing();
+    if (this.golpe === 'investida') this.vx = this.dir*430;
+    if (this.golpe === 'voadora')   { this.vx = this.dir*300; this.vy = Math.min(this.vy, -60); }
+  }
+
+  usaEspecial(){
+    this.fury = 0;
+    this.voz.especial();
+    mostraAviso(this.char.txtEsp, this.corJog);
+    const e = this.char.especial;
+
+    if (e === 'raio'){
+      this.sopro = 0.60; this.feixes = [{ dy:150, dano:26, acertou:false }];
+      tremor(24);
+      // o raio varre a cidade: derruba os prédios da frente no caminho
+      danificaPrediosPerto(this.x + this.dir*450, 260);
+    }
+    else if (e === 'triplo'){
+      this.sopro = 0.70;
+      // dy desconta a altitude: voando alto, os raios ainda varrem
+      // a faixa onde o rival está, senão passam por cima da cabeça dele
+      this.feixes = [196, 158, 120].map(v =>
+        ({ dy: v - this.y*0.9, dano:9, acertou:false }));
+      tremor(28);
+      danificaPrediosPerto(this.x + this.dir*400, 200);
+      danificaPrediosPerto(this.x + this.dir*750, 200);
+    }
+    else if (e === 'sismo'){
+      this.trava = 0.65; tremor(34);
+      anelImpacto(this.x, 6, 0, 0xffb04d, 90, true);
+      derrubaPredio(this.x);
+      novoProjetil({ geo:GEO_ONDA,
+        mat:new THREE.MeshBasicMaterial({ color:0xffb04d, transparent:true, opacity:0.9,
+              blending:THREE.AdditiveBlending, depthWrite:false }),
+        x:this.x + this.dir*70, y:26, vx:this.dir*760, dano:24, dono:this,
+        vida:1.6, raio:56, cor:0xffb04d, chao:true, cresce:1.1, luz:0xffb04d });
+    }
+    else if (e === 'escamas'){
+      this.trava = 0.55;
+      for (let i=0;i<7;i++){
+        const ang = -0.30 + i*0.10;
+        novoProjetil({ geo:GEO_ESCAMA,
+          mat:new THREE.MeshStandardMaterial({ color:0xffe9b0, emissive:0xffb84d,
+                emissiveIntensity:0.8, roughness:0.3, metalness:0.4 }),
+          x:this.x + this.dir*60, y:this.y + 150,
+          vx:this.dir*(620 + i*26), vy:ang*520, grav:520,
+          dano:4, dono:this, vida:2.2, raio:26, cor:0xffe9b0 });
+      }
+      tremor(10);
+    }
+    else if (e === 'mergulho'){
+      this.dash = 0.55; this.jaAcertou = false;
+      this.vx = this.dir*1450; this.vy = 140;
+      tremor(18);
+    }
+  }
+
+  atualiza(dt, rival){
+    this.t += dt;
+    this.piscar = Math.max(0, this.piscar - dt*4);
+    this.reage = Math.max(0, this.reage - dt);
+
+    if (this.ko > 0){
+      this.ko -= dt;
+      this.vx *= 0.86; this.x += this.vx*dt;
+      this.vy -= TUNING.gravity*dt; this.y += this.vy*dt;
+      if (this.y <= 0){ this.y = 0; this.vy = 0; }
+      if (this.ko <= 0){ this.hp = TUNING.maxHp; this.fury = 0; this.voz.rugido(); }
+      this.limita(); return;
+    }
+
+    // MERGULHO do Rodan: atravessa a arena e machuca por encostão
+    if (this.dash > 0){
+      this.dash -= dt;
+      this.x += this.vx*dt;
+      this.y += this.vy*dt; this.vy -= 400*dt;
+      if (this.y < 0) this.y = 0;
+      if (Math.random() < 0.9) faisca(this.x, this.y+90, (Math.random()-0.5)*70, 0xffd0a0);
+      // o estrondo supersônico vai rachando os prédios por onde passa
+      if (Math.random() < 0.35) danificaPrediosPerto(this.x, 110);
+      if (!this.jaAcertou && rival.ko <= 0 && Math.abs(rival.x - this.x) < 100){
+        this.jaAcertou = true;
+        rival.leva(22, this, 0xff8c5a);
+        tremor(30); hitstop = 0.12;
+        this.dash = Math.min(this.dash, 0.12);
+      }
+      this.limita();
+      if (this.dash <= 0){ this.vx = 0; }
+      return;
+    }
+
+    const K = this.ctrl;
+    const preso = this.sopro > 0 || this.trava > 0;
+    if (!this.golpe && !preso) this.dir = rival.x >= this.x ? 1 : -1;
+
+    const e = held.has(K.left), d = held.has(K.right);
+    const querAndar = (e !== d);
+    this.andando = !preso && !this.golpe && querAndar;
+    this.andandoPraFrente = querAndar &&
+      ((d && this.dir > 0) || (e && this.dir < 0));
+
+    if (this.golpe){
+      this.vx *= 0.90;                       // o golpe carrega o corpo junto
+    } else {
+      this.vx = preso ? this.vx*0.8 : (this.andando ? (d?1:-1)*TUNING.walkSpeed : 0);
+    }
+
+    if (this.char.voa){
+      /* VOO DE VERDADE: mola até a altura-alvo. Segurando o pulo o alvo
+         sobe pro teto; soltando, desce até a altura de cruzeiro (~78).
+         Nocaute desliga a mola lá no bloco do ko e o bicho despenca. */
+      const subindo = held.has(K.jump) && !preso;
+      const alvoY = subindo ? 360 : 78;
+      if (tapped.has(K.jump) && !preso) SFX.jump();
+      this.vy += (alvoY - this.y) * 11 * dt;
+      this.vy *= Math.exp(-4.2*dt);
+      this.x += this.vx*dt; this.y += this.vy*dt;
+      if (this.y <= 0){
+        if (this.arremessado){
+          this.arremessado = false;
+          if (danificaPrediosPerto(this.x, 130)){ tremor(16); anelImpacto(this.x, 8, 0, 0x9aa2ad, 60, true); }
+        }
+        this.y = 0; this.vy = Math.max(0, this.vy);
+      }
+      if (this.y > 430){ this.y = 430; this.vy = Math.min(0, this.vy); }
+      // "no chão" pros voadores = voando baixo; lá em cima o golpe vira voadora
+      this.noChao = this.y < 150;
+    } else {
+      if (tapped.has(K.jump) && this.noChao && !preso && !this.golpe){
+        this.vy = TUNING.jumpSpeed; this.noChao = false; SFX.jump();
+      }
+      this.vy -= TUNING.gravity*dt;
+      this.x += this.vx*dt; this.y += this.vy*dt;
+      if (this.y <= 0){
+        if (!this.noChao && this.golpe === 'voadora'){    // aterrissou a voadora
+          anelImpacto(this.x, 8, 0, 0xd9c9a8, 46, true);
+          for (let i=0;i<10;i++) poeira(this.x, 8, (Math.random()-0.5)*90);
+        }
+        // caiu depois de ser arremessado -> esmaga o prédio onde aterrissou
+        if (!this.noChao && this.arremessado){
+          this.arremessado = false;
+          if (danificaPrediosPerto(this.x, 130)){ tremor(16); anelImpacto(this.x, 8, 0, 0x9aa2ad, 60, true); }
+        }
+        this.y = 0; this.vy = 0; this.noChao = true;
+      }
+    }
+    this.limita();
+
+    if (tapped.has(K.hit)) this.tentaGolpe();
+
+    if (this.golpe){
+      this.gp += dt/this.duracaoGolpe();
+      if (this.gp >= 1){ this.golpe = null; this.gp = 0; }
+    }
+    if (this.sopro > 0){
+      this.sopro -= dt;
+      if (this.sopro <= 0) this.feixes = [];
+    }
+    if (this.trava > 0) this.trava -= dt;
+  }
+
+  limita(){ this.x = Math.max(-TUNING.limiteX, Math.min(TUNING.limiteX, this.x)); }
+
+  leva(dano, deQuem, cor){
+    this.hp -= dano; this.piscar = 1; this.reage = 0.45;
+    this.fury = Math.min(100, this.fury + TUNING.furiaApanha);
+    this.vx = deQuem.dir*(300 + dano*14);
+    this.vy = 220 + dano*8;
+    this.noChao = false; this.golpe = null; this.gp = 0;
+    // pancada forte arremessa o monstro CONTRA a cidade
+    if (dano >= 9) this.arremessado = true;
+    anelImpacto(this.x + deQuem.dir*-30, this.y + 120, 60, cor || 0xffe6a0, 34, false);
+    for (let i=0;i<14;i++) faisca(this.x, this.y+110, 0, cor || 0xfff2a8);
+    if (this.hp <= 0){
+      this.hp = 0; this.ko = TUNING.koTime;
+      this.vx = deQuem.dir*560; this.vy = 430;
+      deQuem.pontos++; SFX.ko(); tremor(32);
+      derrubaPredio(); derrubaPredio(this.x);
+      anelImpacto(this.x, 10, 0, 0xffd257, 80, true);
+      for (let i=0;i<28;i++) faisca(this.x, this.y+90, 0, 0xffd257);
+    }
+  }
+
+  aplica(dt){
+    const M = this.M;
+    const espelho = this.dir < 0;
+    M.root.position.set(this.x, this.y, 0);
+    M.root.rotation.y = espelho ? Math.PI : 0;
+    M.root.rotation.z = 0;
+    M.root.visible = true;
+
+    if (this.dash > 0) M.root.rotation.z = this.dir * -0.4;
+    if (this.golpe === 'voadora') M.root.rotation.z = this.dir * -0.3;
+    if (this.ko > 0){
+      M.root.rotation.z = this.dir * -1.25;      // tombado
+      if (this.ko < 1 && Math.floor(this.ko*10) % 2 === 0) M.root.visible = false;
+    }
+
+    animaLutador(this, dt || 0);
+
+    const br = this.piscar > 0 ? this.piscar*0.55 : 0;
+    const cheio = (this.fury >= 100 && this.ko <= 0)
+                ? 0.07 + Math.abs(Math.sin(this.t*7))*0.13 : 0;
+    M.root.traverse(o => {
+      if (!o.isMesh || !o.material.emissive || o.userData.fixo) return;
+      if (cheio) o.material.emissive.setRGB(cheio, cheio*0.85, 0);
+      else o.material.emissive.setScalar(br);
+    });
+
+    M.disco.position.set(this.x, 1.5, 0);
+    const enc = 1 - Math.min(1, this.y/420);
+    M.disco.scale.setScalar(0.55 + enc*0.45);
+    M.disco.material.opacity = 0.10 + enc*0.24;
+    M.disco.visible = true;
+    M.anel.position.set(this.x, 2.5, 0);
+    M.anel.visible = M.root.visible;
+    M.seta.visible = M.root.visible && this.ko <= 0;
+    M.seta.position.set(this.x, this.y + M.alturaSeta + Math.sin(this.t*4)*8, 0);
+    M.seta.rotation.y += 0.02;
+
+    // feixes (Godzilla = 1, Ghidorah = 3)
+    this.garanteRaios(this.feixes.length);
+    this.raioMeshes.forEach((m, i) => {
+      const f = this.feixes[i];
+      if (!f || this.sopro <= 0){ m.visible = false; return; }
+      m.visible = true;
+      m.material.color.setHex(this.corRaio());
+      const alcance = 1500;
+      m.position.set(this.x + this.dir*(50 + alcance/2), this.y + f.dy, 0);
+      const p = 1 + Math.sin(this.t*40 + i)*0.25;
+      m.scale.set(p, alcance/1000, p);
+      if (Math.random() < 0.5)
+        faisca(this.x + this.dir*Math.random()*700, this.y + f.dy,
+               (Math.random()-0.5)*60, this.corRaio());
+    });
+    if (this.sopro > 0){
+      this.raioLuz.color.setHex(this.corRaio());
+      this.raioLuz.intensity = 3;
+      this.raioLuz.position.set(this.x + this.dir*180, this.y + 150, 60);
+    } else this.raioLuz.intensity = 0;
+  }
+
+  some(){
+    this.M.root.visible = false; this.M.disco.visible = false;
+    this.M.anel.visible = false; this.M.seta.visible = false;
+    this.raioMeshes.forEach(m => m.visible = false);
+    this.raioLuz.intensity = 0;
+  }
+}
+
+/* ================== CÂMERA =============================== */
+let shake = 0, hitstop = 0;
+const tremor = v => { shake = Math.max(shake, v); };
+const alvoCam = new THREE.Vector3(0, 150, 0);
+const posCam  = new THREE.Vector3(0, 300, 1100);
+
+function atualizaCamera(dt){
+  let mid = 0, dist = 300, altura = 0;
+  if (lutadores.length === 2){
+    const [a,b] = lutadores;
+    mid = (a.x + b.x)/2; dist = Math.abs(a.x - b.x);
+    altura = Math.max(a.y, b.y);
+  }
+  const recuo = Math.max(1, 1.5/camera.aspect);
+  posCam.set(mid*0.6, 170 + dist*0.05 + altura*0.30, (540 + dist*0.50)*recuo);
+  alvoCam.set(mid*0.75, 210 + altura*0.35, 0);
+  camera.position.lerp(posCam, 1 - Math.pow(0.0015, dt));
+  camera.lookAt(alvoCam);
+  if (shake > 0){
+    camera.position.x += (Math.random()-0.5)*shake;
+    camera.position.y += (Math.random()-0.5)*shake;
+    shake = Math.max(0, shake - 90*dt);
+  }
+}
+function camaraFim(dt){
+  const recuo = Math.max(1, 1.5/camera.aspect);
+  posCam.set(0, 130, 800*recuo); alvoCam.set(0, 330, 0);
+  camera.position.lerp(posCam, 1 - Math.pow(0.004, dt));
+  camera.lookAt(alvoCam);
+}
+
+/* ================== TELAS ================================ */
+const $ = id => document.getElementById(id);
+let estado = 'SELECAO';
+let lutadores = [], vitrine = [], venceu = null;
+let tempo = TUNING.roundTime, tempoTotal = 0, prepara = 0;
+const escolha = [0, 1], confirmou = [false, false];
+let avisoAte = 0;
+
+function mostraAviso(txt, cor){
+  const a = $('aviso');
+  a.textContent = txt;
+  a.style.color = '#' + cor.toString(16).padStart(6,'0');
+  a.classList.add('on');
+  avisoAte = tempoTotal + 1.3;
+}
+
+function montaVitrine(){
+  const passo = 200, ini = -(ROSTER.length-1)*passo/2;
+  vitrine = ROSTER.map((r, i) => {
+    const M = criaMonstro(r, false);
+    M.root.position.set(ini + i*passo, 0, 0);
+    M.anel.visible = false; M.seta.visible = false;
+    M.disco.position.set(M.root.position.x, 1.5, 0);
+    return M;
+  });
+}
+montaVitrine();
+
+const marcas = $('marcas');
+const cursores = [];
+ROSTER.forEach(r => {
+  const d = document.createElement('div'); d.className = 'marca';
+  const cur = document.createElement('div'); cur.className = 'cursor';
+  const nome = document.createElement('div'); nome.className = 'n';
+  nome.textContent = r.nome;
+  const esp = document.createElement('div'); esp.className = 'e';
+  esp.textContent = (r.voa ? '✦ ' : '') + r.txtEsp;
+  d.appendChild(cur); d.appendChild(nome); d.appendChild(esp);
+  marcas.appendChild(d);
+  cursores.push(cur);
+});
+function pintaCursor(i){
+  const cur = cursores[i];
+  while (cur.firstChild) cur.removeChild(cur.firstChild);
+  for (let p=0;p<2;p++){
+    if (escolha[p] !== i) continue;
+    const s = document.createElement('span');
+    s.textContent = 'P' + (p+1);
+    s.style.color = confirmou[p] ? '#3ddc6d' : (p === 0 ? '#ffd873' : '#59a5ff');
+    cur.appendChild(s);
+  }
+}
+
+const v3 = new THREE.Vector3();
+function telaSelecao(dt){
+  const n = ROSTER.length;
+  for (let p=0;p<2;p++){
+    const K = CONTROLS[p];
+    if (!confirmou[p]){
+      if (tapped.has(K.left)) { escolha[p] = (escolha[p]+n-1)%n; SFX.pick(); }
+      if (tapped.has(K.right)){ escolha[p] = (escolha[p]+1)%n;   SFX.pick(); }
+      if (tapped.has(K.hit))  { confirmou[p] = true; SFX.ready();
+                                VOZ[ROSTER[escolha[p]].id].rugido(); }
+    } else if (tapped.has(K.jump)){ confirmou[p] = false; SFX.pick(); }
+  }
+
+  vitrine.forEach((M, i) => {
+    M.root.rotation.y = Math.sin(tempoTotal*0.6 + i)*0.9 + 0.4;
+    const sel = escolha[0] === i || escolha[1] === i;
+    // quem voa já aparece flutuando na vitrine
+    const flutua = M.voa ? 30 + Math.sin(tempoTotal*4 + i)*10 : 0;
+    M.root.position.y = flutua + (sel ? Math.abs(Math.sin(tempoTotal*3))*18 : 0);
+    animaPose(M, tempoTotal + i*1.7, 'idle');
+    M.disco.position.set(M.root.position.x, 1.5, 0);
+    v3.set(M.root.position.x, -10, 0).project(camera);
+    const el = marcas.children[i];
+    el.style.left = ((v3.x*0.5 + 0.5)*innerWidth) + 'px';
+    el.style.top  = Math.min((-v3.y*0.5 + 0.5)*innerHeight, innerHeight*0.52) + 'px';
+    pintaCursor(i);
+  });
+
+  $('d1').textContent = confirmou[0] ? 'P1 PRONTO!' : 'P1: A / D pra escolher, S pra confirmar';
+  $('d2').textContent = confirmou[1] ? 'P2 PRONTO!' : 'P2: ← / → pra escolher, ↓ pra confirmar';
+  $('d1').className = 'dica ' + (confirmou[0] ? 'ok' : 'p1');
+  $('d2').className = 'dica ' + (confirmou[1] ? 'ok' : 'p2');
+
+  const recuo = Math.max(1, 1.5/camera.aspect);
+  posCam.set(0, 165, 980*recuo); alvoCam.set(0, 135, 0);
+  camera.position.lerp(posCam, 1 - Math.pow(0.002, dt));
+  camera.lookAt(alvoCam);
+
+  if (confirmou[0] && confirmou[1]) comecaLuta();
+}
+
+function limpaProjeteis(){ while (projeteis.length) matarProjetil(projeteis[0]); }
+
+function comecaLuta(){
+  vitrine.forEach(v => { v.root.visible = false; v.disco.visible = false; });
+  marcas.style.display = 'none';
+  montaCidade(); limpaProjeteis();
+  lutadores.forEach(l => {
+    scene.remove(l.M.root); scene.remove(l.M.disco);
+    scene.remove(l.M.anel); scene.remove(l.M.seta);
+    l.raioMeshes.forEach(m => scene.remove(m));
+    scene.remove(l.raioLuz);
+  });
+  const iguais = escolha[0] === escolha[1];
+  lutadores = [ new Lutador(0, ROSTER[escolha[0]], false,  -280),
+                new Lutador(1, ROSTER[escolha[1]], iguais,  280) ];
+  $('nome1').textContent = lutadores[0].char.nome;
+  $('nome2').textContent = lutadores[1].char.nome;
+  $('pronto1').textContent = lutadores[0].char.txtEsp + ' PRONTO!';
+  $('pronto2').textContent = lutadores[1].char.txtEsp + ' PRONTO!';
+  tempo = TUNING.roundTime; prepara = 2.4; venceu = null;
+  estado = 'PREPARA';
+  $('selecao').classList.remove('on');
+  $('fim').classList.remove('on');
+  $('hud').classList.add('on');
+}
+
+function telaPrepara(dt){
+  for (const l of lutadores) l.aplica(dt);
+  const antes = prepara; prepara -= dt;
+  const n = Math.ceil(prepara - 0.4);
+  if (Math.ceil(antes - 0.4) !== n && n >= 1 && n <= 3) SFX.ready();
+  const c = $('contagem');
+  c.classList.add('on');
+  if (n >= 1){ c.textContent = String(n); c.classList.remove('lutar'); }
+  else {
+    c.textContent = 'LUTAR!'; c.classList.add('lutar');
+    if (antes - 0.4 >= 0 && prepara - 0.4 < 0){
+      SFX.fight(); lutadores.forEach(l => l.voz.rugido());
+    }
+  }
+  if (prepara <= 0){ estado = 'LUTA'; c.classList.remove('on'); }
+}
+
+const bate = (a,b) => !(a.x2 < b.x1 || a.x1 > b.x2 || a.y2 < b.y1 || a.y1 > b.y2);
+
+function telaLuta(dt){
+  const [a,b] = lutadores;
+  a.atualiza(dt, b); b.atualiza(dt, a);
+
+  const d = b.x - a.x;
+  if (Math.abs(d) < 92 && a.ko <= 0 && b.ko <= 0 && a.dash <= 0 && b.dash <= 0){
+    const emp = (92 - Math.abs(d))/2 * (d >= 0 ? 1 : -1);
+    a.x -= emp; b.x += emp; a.limita(); b.limita();
+  }
+
+  for (const [ata, alvo] of [[a,b],[b,a]]){
+    if (ata.golpeAtivo && !ata.jaAcertou && alvo.ko <= 0 && bate(ata.caixaGolpe, alvo.caixa)){
+      ata.jaAcertou = true;
+      ata.fury = Math.min(100, ata.fury + TUNING.furiaAcerto);
+      const dano = ata.danoGolpe;
+      alvo.leva(dano, ata);
+      ata.voz.golpe();
+      tremor(8 + dano); hitstop = 0.05 + dano*0.006;
+    }
+    // feixes
+    if (ata.sopro > 0 && alvo.ko <= 0){
+      for (const f of ata.feixes){
+        if (f.acertou) continue;
+        const cx = { x1: ata.dir>0 ? ata.x+50 : -3000, x2: ata.dir>0 ? 3000 : ata.x-50,
+                     y1: ata.y + f.dy - 34, y2: ata.y + f.dy + 34 };
+        if (bate(cx, alvo.caixa)){
+          f.acertou = true;
+          alvo.leva(f.dano, ata, ata.corRaio());
+          tremor(20); hitstop = 0.08;
+        }
+      }
+    }
+  }
+
+  atualizaProjeteis(dt);
+
+  for (const l of lutadores)
+    if (l.andando && l.noChao && !l.char.voa && Math.random() < 0.25)
+      poeira(l.x - l.dir*20, 6, (Math.random()-0.5)*40);
+
+  tempo -= dt;
+  if (tempo <= 0) terminaRound();
+
+  for (const l of lutadores) l.aplica(dt);
+  atualizaHUD();
+}
+
+function atualizaHUD(){
+  const [a,b] = lutadores;
+  $('vida1').style.width = (a.hp/TUNING.maxHp*100) + '%';
+  $('vida2').style.width = (b.hp/TUNING.maxHp*100) + '%';
+  $('fury1').style.width = a.fury + '%';
+  $('fury2').style.width = b.fury + '%';
+  $('fbar1').classList.toggle('cheia', a.fury >= 100);
+  $('fbar2').classList.toggle('cheia', b.fury >= 100);
+  $('pronto1').classList.toggle('on', a.fury >= 100);
+  $('pronto2').classList.toggle('on', b.fury >= 100);
+  $('placar').textContent = a.pontos + ' - ' + b.pontos;
+  const s = Math.ceil(Math.max(0, tempo));
+  $('relogio').textContent = String(s);
+  $('relogio').classList.toggle('pouco', s <= 10);
+  if (avisoAte && tempoTotal > avisoAte){ $('aviso').classList.remove('on'); avisoAte = 0; }
+}
+
+function terminaRound(){
+  estado = 'FIM';
+  const [a,b] = lutadores;
+  venceu = a.pontos === b.pontos ? null : (a.pontos > b.pontos ? a : b);
+  if (venceu) venceu.voz.rugido();
+  $('fimTitulo').textContent = venceu ? (venceu.char.nome + ' VENCEU!') : 'EMPATE!';
+  $('fimTitulo').style.color = venceu ? '#ffd873' : '#9fd8ff';
+  $('fimPlacar').textContent =
+    a.char.nome + '  ' + a.pontos + '  -  ' + b.pontos + '  ' + b.char.nome;
+  $('fim').classList.add('on');
+  $('hud').classList.remove('on');
+  $('aviso').classList.remove('on');
+  limpaProjeteis();
+}
+
+function telaFim(dt){
+  const [a,b] = lutadores;
+  a.x += (-230 - a.x)*Math.min(1, dt*3);
+  b.x += ( 230 - b.x)*Math.min(1, dt*3);
+  a.dir = 1; b.dir = -1;
+  for (const l of lutadores){
+    l.t += dt;
+    const ganhou = l === venceu;
+    l.M.root.position.set(l.x, ganhou ? Math.abs(Math.sin(l.t*5))*40 : 0, 0);
+    l.M.root.rotation.y = l.dir > 0 ? 0 : Math.PI;
+    l.M.root.rotation.z = 0;
+    l.M.root.visible = true;
+    l.M.seta.visible = false;
+    l.M.anel.visible = true;
+    l.M.anel.position.set(l.x, 2.5, 0);
+    l.M.disco.position.set(l.x, 1.5, 0);
+    // vencedor comemora de braços pra cima, perdedor fica cabisbaixo
+    animaPose(l.M, l.t, ganhou ? 'sim' : 'nao');
+  }
+  if (tapped.has('Space')){ a.pontos = 0; b.pontos = 0; comecaLuta(); }
+  if (tapped.has('Enter')){
+    lutadores.forEach(l => l.some());
+    vitrine.forEach(v => { v.root.visible = true; v.disco.visible = true; });
+    marcas.style.display = '';
+    confirmou[0] = confirmou[1] = false;
+    estado = 'SELECAO';
+    $('fim').classList.remove('on');
+    $('selecao').classList.add('on');
+  }
+}
+
+/* ================== LOOP ================================= */
+let anterior = performance.now();
+function quadro(agora){
+  let dt = (agora - anterior)/1000; anterior = agora;
+  dt = Math.min(dt, 1/30);
+  tempoTotal += dt;
+  if (hitstop > 0){ hitstop -= dt; dt = 0; }
+
+  atualizaParticulas(dt);
+  atualizaAneis(dt);
+
+  for (const p of predios){
+    if (p.queda > 0){
+      p.queda = Math.max(0, p.queda - dt*1.6);
+      const f = p.queda;
+      p.mesh.scale.y = 0.28 + f*0.72;
+      p.mesh.position.y = p.altura/2 * p.mesh.scale.y;
+      p.mesh.rotation.z = (1-f)*0.12;
+    }
+  }
+
+  if      (estado === 'SELECAO') telaSelecao(dt);
+  else if (estado === 'PREPARA'){ telaPrepara(dt); atualizaCamera(dt); atualizaHUD(); }
+  else if (estado === 'LUTA')   { telaLuta(dt);    atualizaCamera(dt); }
+  else                          { telaFim(dt);     camaraFim(dt); }
+
+  renderer.render(scene, camera);
+  tapped.clear();
+  requestAnimationFrame(quadro);
+}
+requestAnimationFrame(quadro);
+</script>
+</body>
+</html>
