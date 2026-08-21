@@ -1,579 +1,768 @@
-<title>Projeto TITÃ — Criadores de IA | Escopo do Programa</title>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Projeto TITÃ — Criadores de IA · Curso de inteligência artificial para crianças de 7 a 14 anos</title>
+<meta name="description" content="O extracurricular em que a criança não aprende a usar IA — aprende a construir com ela. 3 trilhas por idade, 32 aulas, culminando num jogo publicado. Jogue a demo.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <style>
   :root{
-    --papel:#f7f5ef;
-    --cartao:#ffffff;
-    --tinta:#1c2733;
-    --tinta2:#4a5866;
-    --linha:#dcd8cc;
-    --ambar:#e09b18;
-    --ambar-forte:#a86f04;
-    --t1:#d95436;      /* Exploradores 7-9  */
-    --t2:#0e8a7b;      /* Construtores 10-12 */
-    --t3:#5f4bb6;      /* Inventores 13-14  */
-    --t1-fundo:#fbe9e3;
-    --t2-fundo:#e2f2ef;
-    --t3-fundo:#ece8f8;
-    --marca:#16233b;
-    --marca-texto:#f7f0dd;
+    --noite:#0c1120;         /* hero escuro, céu do jogo */
+    --noite2:#131a2e;
+    --papel:#f6f7fb;
+    --branco:#ffffff;
+    --tinta:#17203a;
+    --tinta2:#5a6478;
+    --linha:#e3e6ef;
+    --ambar:#ffb520;
+    --ambar-escuro:#8a5f00;
+    --t1:#ff6b4a;  --t1-suave:#fff0ec;
+    --t2:#0fb5a0;  --t2-suave:#e7f8f5;
+    --t3:#8b5cf6;  --t3-suave:#f1ecfe;
+    --sombra:0 8px 30px rgba(23,32,58,.08);
+    --sombra-forte:0 16px 48px rgba(23,32,58,.16);
+    --raio:16px;
   }
-  :root:not([data-theme="light"]){ }
-  @media (prefers-color-scheme: dark){
-    :root:not([data-theme="light"]){
-      --papel:#141a24;
-      --cartao:#1d2532;
-      --tinta:#e8e6df;
-      --tinta2:#a8b0ba;
-      --linha:#323d4c;
-      --ambar:#f0b23c;
-      --ambar-forte:#f0b23c;
-      --t1:#f07a5c;
-      --t2:#3cbcab;
-      --t3:#9b87e8;
-      --t1-fundo:#33231f;
-      --t2-fundo:#17302c;
-      --t3-fundo:#262038;
-      --marca:#0d1522;
-      --marca-texto:#f0e8d4;
-    }
-  }
-  :root[data-theme="dark"]{
-    --papel:#141a24; --cartao:#1d2532; --tinta:#e8e6df; --tinta2:#a8b0ba;
-    --linha:#323d4c; --ambar:#f0b23c; --ambar-forte:#f0b23c;
-    --t1:#f07a5c; --t2:#3cbcab; --t3:#9b87e8;
-    --t1-fundo:#33231f; --t2-fundo:#17302c; --t3-fundo:#262038;
-    --marca:#0d1522; --marca-texto:#f0e8d4;
-  }
-
   *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; scroll-padding-top:76px; }
+  @media (prefers-reduced-motion: reduce){ html{ scroll-behavior:auto; }
+    *,*::before,*::after{ animation:none !important; transition:none !important; } }
   body{
-    background:var(--papel); color:var(--tinta);
-    font-family:'Palatino Linotype','Iowan Old Style',Palatino,Georgia,serif;
+    font-family:'Nunito Sans',system-ui,-apple-system,sans-serif;
+    color:var(--tinta); background:var(--papel);
     font-size:17px; line-height:1.65;
+    -webkit-font-smoothing:antialiased;
   }
-  .util, nav, th, .chip, .aula-num, .eyebrow, .tag{
-    font-family:Futura,'Century Gothic','Trebuchet MS','Segoe UI',sans-serif;
+  h1,h2,h3,.disp{ font-family:'Baloo 2','Nunito Sans',sans-serif; line-height:1.15; }
+  img,svg{ max-width:100%; }
+  .wrap{ max-width:1120px; margin:0 auto; padding:0 24px; }
+  .wrap-texto{ max-width:820px; margin:0 auto; padding:0 24px; }
+
+  /* ---------- ícones ---------- */
+  .ic{ width:26px; height:26px; stroke:currentColor; stroke-width:2;
+       fill:none; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
+
+  /* ---------- topo ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(12,17,32,.92); backdrop-filter:blur(10px);
+    border-bottom:1px solid rgba(255,255,255,.07);
   }
-  h1,h2,h3,h4{
-    font-family:Futura,'Century Gothic','Trebuchet MS','Segoe UI',sans-serif;
-    line-height:1.2; text-wrap:balance;
+  .topo{ display:flex; align-items:center; gap:24px; height:64px; }
+  .logo{ font-family:'Baloo 2',sans-serif; font-weight:800; font-size:22px;
+    color:#fff; text-decoration:none; letter-spacing:.01em; }
+  .logo b{ color:var(--ambar); }
+  .topo nav{ display:flex; gap:20px; margin-left:auto; }
+  .topo nav a{ color:#c6cde0; text-decoration:none; font-size:15px; font-weight:700;
+    padding:8px 2px; }
+  .topo nav a:hover, .topo nav a:focus-visible{ color:#fff; outline:none; }
+  .cta-mini{
+    background:var(--ambar); color:#231800 !important; border-radius:999px;
+    padding:10px 20px !important; font-weight:800 !important;
   }
+  .cta-mini:hover{ filter:brightness(1.06); }
+  @media(max-width:860px){ .topo nav a:not(.cta-mini){ display:none; } }
 
-  .capa{
-    background:var(--marca); color:var(--marca-texto);
-    padding:64px 24px 56px;
+  /* ---------- hero ---------- */
+  .hero{
+    background:var(--noite); color:#eef1fa; position:relative; overflow:hidden;
   }
-  .capa-inner{ max-width:880px; margin:0 auto; }
-  .eyebrow{
-    text-transform:uppercase; letter-spacing:.18em; font-size:12px;
-    color:var(--ambar); font-weight:700;
+  .hero::before{ /* estrelas */
+    content:""; position:absolute; inset:0;
+    background-image:
+      radial-gradient(1.5px 1.5px at 12% 22%, #ffffffcc 50%, transparent 51%),
+      radial-gradient(1px 1px at 34% 12%, #ffffff99 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 58% 30%, #ffffffbb 50%, transparent 51%),
+      radial-gradient(1px 1px at 76% 14%, #ffffff88 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 90% 40%, #ffffffaa 50%, transparent 51%),
+      radial-gradient(1px 1px at 22% 48%, #ffffff77 50%, transparent 51%),
+      radial-gradient(1px 1px at 66% 52%, #ffffff77 50%, transparent 51%);
   }
-  .capa h1{ font-size:clamp(34px,6vw,56px); margin:14px 0 6px; letter-spacing:-0.01em; }
-  .capa .sub{ font-size:clamp(17px,2.6vw,21px); opacity:.92; max-width:34em;
-    font-family:'Palatino Linotype',Georgia,serif; font-style:italic; }
-  .capa-fatos{ display:flex; flex-wrap:wrap; gap:10px; margin-top:28px; }
-  .chip{
-    border:1px solid rgba(240,178,60,.45); color:var(--marca-texto);
-    border-radius:999px; padding:6px 14px; font-size:13px; letter-spacing:.02em;
+  .hero-grade{
+    position:relative; display:grid; grid-template-columns:1.15fr .85fr;
+    gap:48px; align-items:center; padding:72px 0 110px;
   }
-
-  nav{
-    position:sticky; top:0; z-index:9; background:var(--cartao);
-    border-bottom:1px solid var(--linha);
-    overflow-x:auto; white-space:nowrap;
+  @media(max-width:920px){ .hero-grade{ grid-template-columns:1fr; padding:56px 0 96px; } }
+  .hero .selo{
+    display:inline-flex; align-items:center; gap:8px;
+    background:rgba(255,181,32,.12); border:1px solid rgba(255,181,32,.4);
+    color:var(--ambar); border-radius:999px; padding:7px 16px;
+    font-size:13.5px; font-weight:800; letter-spacing:.04em; text-transform:uppercase;
   }
-  nav .inner{ max-width:880px; margin:0 auto; padding:0 24px; display:flex; gap:22px; }
-  nav a{
-    color:var(--tinta2); text-decoration:none; font-size:13px; font-weight:600;
-    letter-spacing:.04em; padding:12px 0; border-bottom:3px solid transparent;
+  .hero h1{
+    font-size:clamp(34px,5.2vw,58px); font-weight:800; margin:20px 0 14px;
+    text-wrap:balance;
   }
-  nav a:hover, nav a:focus-visible{ color:var(--tinta); border-bottom-color:var(--ambar); outline:none; }
-
-  main{ max-width:880px; margin:0 auto; padding:16px 24px 80px; }
-  section{ padding-top:52px; }
-  section > .eyebrow{ color:var(--ambar-forte); }
-  section h2{ font-size:clamp(24px,4vw,32px); margin:8px 0 18px; }
-  p{ max-width:42em; margin-bottom:14px; color:var(--tinta); }
-  p.mut{ color:var(--tinta2); }
-  strong{ font-weight:700; }
-
-  .cartao{
-    background:var(--cartao); border:1px solid var(--linha); border-radius:10px;
-    padding:22px 24px; margin:18px 0;
+  .hero h1 em{ font-style:normal; color:var(--ambar); }
+  .hero .sub{ font-size:clamp(17px,2.2vw,20px); color:#b9c2d8; max-width:32em; }
+  .hero-ctas{ display:flex; flex-wrap:wrap; gap:14px; margin-top:30px; }
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:10px;
+    border-radius:999px; padding:15px 30px; min-height:52px;
+    font-family:'Baloo 2',sans-serif; font-weight:700; font-size:17.5px;
+    text-decoration:none; cursor:pointer; border:none;
+    transition:transform .15s ease, filter .15s ease, box-shadow .15s ease;
   }
-  .grade2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-  .grade3{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
-  @media(max-width:720px){ .grade2,.grade3{ grid-template-columns:1fr; } }
+  .btn:active{ transform:scale(.97); }
+  .btn-primario{ background:var(--ambar); color:#231800;
+    box-shadow:0 6px 24px rgba(255,181,32,.35); }
+  .btn-primario:hover{ filter:brightness(1.06); }
+  .btn-fantasma{ background:transparent; color:#fff;
+    border:2px solid rgba(255,255,255,.35); }
+  .btn-fantasma:hover{ border-color:#fff; }
+  .hero-fatos{ display:flex; flex-wrap:wrap; gap:22px; margin-top:36px; }
+  .fato .n{ font-family:'Baloo 2',sans-serif; font-weight:800; font-size:26px;
+    color:#fff; line-height:1; font-variant-numeric:tabular-nums; }
+  .fato .l{ font-size:13.5px; color:#8f9ab5; font-weight:700; }
 
-  /* princípios */
-  .princ{ counter-reset:pr; display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-  @media(max-width:720px){ .princ{ grid-template-columns:1fr; } }
-  .princ .cartao{ margin:0; }
-  .princ h4{ font-size:16px; margin-bottom:6px; }
-  .princ p{ font-size:15px; color:var(--tinta2); margin:0; }
-
-  /* trilhas */
-  .trilha{ border-radius:12px; border:1px solid var(--linha); background:var(--cartao);
-    margin:26px 0; overflow:hidden; }
-  .trilha-cab{ padding:20px 24px; color:#fff; }
-  .trilha-cab .tag{ text-transform:uppercase; letter-spacing:.14em; font-size:11px;
-    font-weight:700; opacity:.9; }
-  .trilha-cab h3{ font-size:clamp(20px,3.4vw,26px); margin-top:4px; }
-  .trilha-cab .meta{ font-size:14px; opacity:.92; margin-top:4px;
-    font-family:'Palatino Linotype',Georgia,serif; font-style:italic; }
-  .t1 .trilha-cab{ background:var(--t1); }
-  .t2 .trilha-cab{ background:var(--t2); }
-  .t3 .trilha-cab{ background:var(--t3); }
-  .trilha-corpo{ padding:20px 24px; }
-  .trilha-corpo > p{ font-size:15.5px; }
-
-  .unidade{ margin:18px 0 6px; border-radius:8px; overflow:hidden;
-    border:1px solid var(--linha); }
-  .unidade summary{
-    cursor:pointer; padding:12px 16px; font-weight:700; font-size:14.5px;
-    font-family:Futura,'Century Gothic','Trebuchet MS',sans-serif;
-    letter-spacing:.02em; list-style:none; display:flex; justify-content:space-between;
-    gap:12px; align-items:baseline;
+  /* cartão-arcade do hero */
+  .arcade{
+    position:relative; border-radius:20px; overflow:hidden;
+    border:1px solid rgba(255,255,255,.12);
+    background:linear-gradient(160deg,#1b2440,#0e1428);
+    box-shadow:0 24px 70px rgba(0,0,0,.5);
+    aspect-ratio:16/11; display:flex; flex-direction:column;
+    text-decoration:none;
   }
-  .unidade summary::-webkit-details-marker{ display:none; }
-  .unidade summary .qtd{ font-size:12px; color:var(--tinta2); font-weight:600; flex-shrink:0; }
-  .t1 .unidade summary{ background:var(--t1-fundo); }
-  .t2 .unidade summary{ background:var(--t2-fundo); }
-  .t3 .unidade summary{ background:var(--t3-fundo); }
-  .aulas{ display:grid; grid-template-columns:1fr 1fr; gap:0 22px; padding:14px 16px; }
-  @media(max-width:720px){ .aulas{ grid-template-columns:1fr; } }
-  .aula{ display:flex; gap:10px; padding:5px 0; font-size:14.5px; align-items:baseline; }
-  .aula-num{ font-size:11.5px; font-weight:700; color:var(--tinta2);
-    min-width:2.2em; text-align:right; flex-shrink:0;
-    font-variant-numeric:tabular-nums; }
-  .t1 .aula-num{ color:var(--t1); } .t2 .aula-num{ color:var(--t2); } .t3 .aula-num{ color:var(--t3); }
-
-  table{ width:100%; border-collapse:collapse; font-size:14.5px; margin:14px 0; }
-  .rolagem{ overflow-x:auto; }
-  th{ text-align:left; font-size:12px; text-transform:uppercase; letter-spacing:.08em;
-    color:var(--tinta2); padding:8px 10px; border-bottom:2px solid var(--linha); }
-  td{ padding:9px 10px; border-bottom:1px solid var(--linha); vertical-align:top; }
-  td:first-child{ font-weight:700;
-    font-family:Futura,'Century Gothic','Trebuchet MS',sans-serif; font-size:13.5px; }
-
-  .aviso{ border-left:4px solid var(--ambar); background:var(--cartao);
-    border-radius:0 10px 10px 0; padding:16px 20px; margin:18px 0; }
-  .aviso p{ margin:0; font-size:15px; }
-
-  .fase{ display:flex; gap:16px; padding:14px 0; border-bottom:1px solid var(--linha); }
-  .fase:last-child{ border-bottom:none; }
-  .fase .qd{ font-family:Futura,'Century Gothic',sans-serif; font-weight:700;
-    color:var(--ambar-forte); min-width:7.5em; font-size:13.5px; padding-top:2px; }
-  .fase div p{ margin:0; font-size:15px; }
-  .fase div h4{ font-size:15.5px; margin-bottom:2px; }
-
-  footer{ border-top:1px solid var(--linha); margin-top:40px; padding:24px;
-    text-align:center; font-size:13px; color:var(--tinta2); }
-  @media(prefers-reduced-motion:no-preference){
-    html{ scroll-behavior:smooth; }
+  .arcade:hover .arcade-play{ transform:scale(1.06); }
+  .arcade-ceu{ flex:1; position:relative; overflow:hidden; }
+  .arcade-ceu svg{ position:absolute; inset:auto 0 0 0; width:100%; }
+  .arcade-lua{ position:absolute; top:14%; right:12%; width:44px; height:44px;
+    border-radius:50%; background:#f4ecca; box-shadow:0 0 34px #f4ecca66; }
+  .arcade-play{
+    position:absolute; inset:0; margin:auto; width:76px; height:76px;
+    background:var(--ambar); border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 10px 34px rgba(255,181,32,.5);
+    transition:transform .18s ease;
   }
+  .arcade-play svg{ width:30px; height:30px; fill:#231800; stroke:none; margin-left:4px; }
+  .arcade-rodape{
+    padding:14px 20px; display:flex; justify-content:space-between; align-items:center;
+    border-top:1px solid rgba(255,255,255,.09);
+  }
+  .arcade-rodape .t{ color:#fff; font-family:'Baloo 2',sans-serif; font-weight:700; }
+  .arcade-rodape .s{ color:#8f9ab5; font-size:13px; font-weight:700; }
+
+  /* faixa de credibilidade */
+  .cred{ background:var(--noite2); border-top:1px solid rgba(255,255,255,.06);
+    position:relative; }
+  .cred .wrap{ display:flex; flex-wrap:wrap; gap:12px 40px; padding:18px 24px;
+    justify-content:center; }
+  .cred span{ color:#aab4cd; font-size:14px; font-weight:700;
+    display:inline-flex; gap:9px; align-items:center; }
+  .cred .ic{ width:18px; height:18px; color:var(--ambar); }
+
+  /* ---------- seções ---------- */
+  section{ padding:88px 0; }
+  .cabeca{ text-align:center; max-width:720px; margin:0 auto 52px; padding:0 24px; }
+  .eyebrow{ font-size:13.5px; font-weight:800; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--ambar-escuro); }
+  .cabeca h2{ font-size:clamp(28px,4vw,40px); font-weight:800; margin-top:10px;
+    text-wrap:balance; }
+  .cabeca p{ color:var(--tinta2); margin-top:12px; font-size:18px; }
+
+  .cards3{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+  @media(max-width:920px){ .cards3{ grid-template-columns:1fr; } }
+  .card{
+    background:var(--branco); border-radius:var(--raio); padding:30px;
+    box-shadow:var(--sombra); border:1px solid var(--linha);
+  }
+  .card .ic-caixa{
+    width:52px; height:52px; border-radius:14px; display:flex;
+    align-items:center; justify-content:center; margin-bottom:18px;
+    background:var(--t2-suave); color:var(--t2);
+  }
+  .card h3{ font-size:20px; font-weight:700; margin-bottom:8px; }
+  .card p{ color:var(--tinta2); font-size:15.5px; }
+
+  /* ---------- trilhas ---------- */
+  .trilha{
+    background:var(--branco); border-radius:20px; box-shadow:var(--sombra);
+    border:1px solid var(--linha); overflow:hidden; margin-bottom:30px;
+  }
+  .trilha-topo{ display:grid; grid-template-columns:280px 1fr; }
+  @media(max-width:820px){ .trilha-topo{ grid-template-columns:1fr; } }
+  .trilha-id{ padding:32px; color:#fff; display:flex; flex-direction:column;
+    justify-content:center; gap:6px; }
+  .t1g{ background:linear-gradient(150deg,#ff7c58,#e84e2c); }
+  .t2g{ background:linear-gradient(150deg,#17c9b2,#0a9a88); }
+  .t3g{ background:linear-gradient(150deg,#9d74f8,#7443e0); }
+  .trilha-id .faixa{ font-size:13px; font-weight:800; letter-spacing:.1em;
+    text-transform:uppercase; opacity:.9; }
+  .trilha-id h3{ font-size:30px; font-weight:800; }
+  .trilha-id .serie{ font-size:14.5px; font-weight:700; opacity:.92; }
+  .trilha-resumo{ padding:28px 32px; }
+  .trilha-resumo p{ color:var(--tinta2); font-size:16px; }
+  .trilha-resumo .leva{ margin-top:14px; display:flex; flex-direction:column; gap:8px; }
+  .leva span{ display:flex; gap:10px; align-items:flex-start; font-size:15px;
+    font-weight:600; }
+  .leva .ic{ width:20px; height:20px; margin-top:2px; }
+  .tt1 .leva .ic{ color:var(--t1); } .tt2 .leva .ic{ color:var(--t2); } .tt3 .leva .ic{ color:var(--t3); }
+
+  .ementa{ border-top:1px solid var(--linha); }
+  .ementa summary{
+    list-style:none; cursor:pointer; padding:16px 32px;
+    font-weight:800; font-size:15px; color:var(--tinta2);
+    display:flex; align-items:center; gap:10px; user-select:none;
+  }
+  .ementa summary:hover{ color:var(--tinta); }
+  .ementa summary::-webkit-details-marker{ display:none; }
+  .ementa summary .ic{ width:18px; height:18px; transition:transform .2s; }
+  .ementa[open] summary .ic{ transform:rotate(90deg); }
+  .unidades{ display:grid; grid-template-columns:1fr 1fr; gap:22px; padding:6px 32px 30px; }
+  @media(max-width:820px){ .unidades{ grid-template-columns:1fr; } }
+  .uni h4{ font-size:14px; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
+    padding:8px 12px; border-radius:8px; margin-bottom:10px; }
+  .tt1 .uni h4{ background:var(--t1-suave); color:#a33717; }
+  .tt2 .uni h4{ background:var(--t2-suave); color:#0a6c60; }
+  .tt3 .uni h4{ background:var(--t3-suave); color:#5f39c4; }
+  .uni ol{ list-style:none; }
+  .uni li{ display:flex; gap:10px; font-size:14.5px; padding:3.5px 0;
+    color:var(--tinta); align-items:baseline; }
+  .uni li b{ font-variant-numeric:tabular-nums; font-weight:800; font-size:12.5px;
+    min-width:2em; text-align:right; }
+  .tt1 .uni li b{ color:var(--t1); } .tt2 .uni li b{ color:var(--t2); } .tt3 .uni li b{ color:var(--t3); }
+
+  /* ---------- demo ---------- */
+  .demo{ background:var(--noite); color:#eef1fa; position:relative; overflow:hidden; }
+  .demo .cabeca h2{ color:#fff; }
+  .demo .cabeca p{ color:#b9c2d8; }
+  .demo .eyebrow{ color:var(--ambar); }
+  .tela-jogo{
+    position:relative; border-radius:18px; overflow:hidden;
+    border:1px solid rgba(255,255,255,.14);
+    box-shadow:0 30px 80px rgba(0,0,0,.55);
+    aspect-ratio:16/9; background:#05060f; max-width:960px; margin:0 auto;
+  }
+  .tela-jogo iframe{ width:100%; height:100%; border:0; display:block; }
+  .tela-capa{
+    position:absolute; inset:0; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:18px;
+    background:linear-gradient(170deg,rgba(12,17,32,.55),rgba(12,17,32,.88));
+    cursor:pointer; border:0; width:100%; color:#fff; font-family:inherit;
+  }
+  .tela-capa .arcade-play{ position:static; }
+  .tela-capa .t{ font-family:'Baloo 2',sans-serif; font-weight:700; font-size:20px; }
+  .tela-capa .s{ font-size:14px; color:#b9c2d8; font-weight:600; max-width:34em;
+    text-align:center; padding:0 20px; }
+  .controles{
+    display:flex; flex-wrap:wrap; gap:12px 32px; justify-content:center;
+    margin:26px auto 0; max-width:960px; color:#b9c2d8; font-size:14.5px; font-weight:700;
+  }
+  .controles kbd{
+    background:#1d2743; border:1px solid #35415f; border-bottom-width:3px;
+    border-radius:6px; padding:2px 9px; font-family:inherit; font-weight:800;
+    color:#fff; font-size:13px;
+  }
+  .demo-nota{ text-align:center; margin-top:26px; }
+  .demo-nota p{ color:#8f9ab5; font-size:14.5px; max-width:46em; margin:0 auto; }
+  .demo-nota a{ color:var(--ambar); font-weight:800; }
+
+  /* ---------- passos ---------- */
+  .passos{ display:grid; grid-template-columns:repeat(4,1fr); gap:20px; counter-reset:p; }
+  @media(max-width:920px){ .passos{ grid-template-columns:1fr 1fr; } }
+  @media(max-width:560px){ .passos{ grid-template-columns:1fr; } }
+  .passo{ background:var(--branco); border-radius:var(--raio); padding:26px;
+    border:1px solid var(--linha); box-shadow:var(--sombra); }
+  .passo::before{
+    counter-increment:p; content:counter(p);
+    font-family:'Baloo 2',sans-serif; font-weight:800; font-size:15px;
+    width:34px; height:34px; border-radius:50%; display:flex;
+    align-items:center; justify-content:center; margin-bottom:14px;
+    background:var(--ambar); color:#231800;
+  }
+  .passo h3{ font-size:17.5px; margin-bottom:6px; }
+  .passo p{ font-size:14.5px; color:var(--tinta2); }
+
+  /* ---------- investimento ---------- */
+  .planos{ display:grid; grid-template-columns:1fr 1fr; gap:24px; max-width:900px; margin:0 auto; }
+  @media(max-width:820px){ .planos{ grid-template-columns:1fr; } }
+  .plano{ background:var(--branco); border-radius:20px; padding:34px;
+    border:1px solid var(--linha); box-shadow:var(--sombra); position:relative; }
+  .plano.destaque{ border:2px solid var(--ambar); box-shadow:var(--sombra-forte); }
+  .plano .tag{ position:absolute; top:-13px; left:30px; background:var(--ambar);
+    color:#231800; font-size:12.5px; font-weight:800; letter-spacing:.06em;
+    text-transform:uppercase; padding:4px 14px; border-radius:999px; }
+  .plano h3{ font-size:22px; }
+  .plano .preco{ font-family:'Baloo 2',sans-serif; font-weight:800;
+    font-size:38px; margin:8px 0 2px; }
+  .plano .preco small{ font-size:16px; color:var(--tinta2); font-weight:700; }
+  .plano .desc{ color:var(--tinta2); font-size:15px; margin-bottom:16px; }
+  .plano ul{ list-style:none; display:flex; flex-direction:column; gap:9px; }
+  .plano li{ display:flex; gap:10px; font-size:15px; font-weight:600; align-items:flex-start; }
+  .plano li .ic{ width:19px; height:19px; color:var(--t2); margin-top:3px; }
+
+  /* ---------- FAQ ---------- */
+  .faq{ max-width:820px; margin:0 auto; }
+  .faq details{ background:var(--branco); border:1px solid var(--linha);
+    border-radius:14px; margin-bottom:12px; box-shadow:var(--sombra); }
+  .faq summary{ list-style:none; cursor:pointer; padding:19px 24px;
+    font-weight:800; font-size:16.5px; display:flex; justify-content:space-between;
+    gap:16px; align-items:center; }
+  .faq summary::-webkit-details-marker{ display:none; }
+  .faq summary .ic{ width:20px; height:20px; color:var(--ambar-escuro);
+    transition:transform .2s; }
+  .faq details[open] summary .ic{ transform:rotate(45deg); }
+  .faq .resp{ padding:0 24px 20px; color:var(--tinta2); font-size:15.5px; }
+
+  /* ---------- CTA final ---------- */
+  .final{ background:var(--noite); color:#fff; text-align:center; }
+  .final h2{ font-size:clamp(28px,4.4vw,44px); font-weight:800; text-wrap:balance; }
+  .final p{ color:#b9c2d8; font-size:18px; max-width:36em; margin:14px auto 30px; }
+
+  footer{ background:var(--noite2); color:#8f9ab5; font-size:14px; }
+  footer .wrap{ padding:28px 24px; display:flex; flex-wrap:wrap; gap:10px 30px;
+    justify-content:space-between; }
+  footer a{ color:#c6cde0; font-weight:700; text-decoration:none; }
+  footer a:hover{ text-decoration:underline; }
+
+  :focus-visible{ outline:3px solid var(--ambar); outline-offset:2px; border-radius:4px; }
 </style>
+</head>
+<body>
 
-<div class="capa">
-  <div class="capa-inner">
-    <div class="eyebrow">Proposta pedagógica e comercial · Ensino Fundamental</div>
-    <h1>Projeto TITÃ<br>Criadores de IA</h1>
-    <p class="sub">O extracurricular em que a criança não aprende a usar inteligência artificial — aprende a construir com ela. Da primeira pergunta ao primeiro jogo publicado.</p>
-    <div class="capa-fatos">
-      <span class="chip">7 a 14 anos · 3 trilhas por idade</span>
-      <span class="chip">32 aulas de 1h · ano letivo completo</span>
-      <span class="chip">Turmas de 12–16 alunos</span>
-      <span class="chip">Culminância: jogo próprio + feira aberta às famílias</span>
+<header>
+  <div class="wrap topo">
+    <a class="logo" href="#">PROJETO <b>TITÃ</b></a>
+    <nav aria-label="principal">
+      <a href="#programa">O programa</a>
+      <a href="#trilhas">Trilhas</a>
+      <a href="#demo">Demo</a>
+      <a href="#investimento">Investimento</a>
+      <a href="#faq">Dúvidas</a>
+      <a class="cta-mini" href="https://wa.me/5511951000900?text=Quero%20o%20Projeto%20TIT%C3%83%20na%20minha%20escola">Levar pra minha escola</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap hero-grade">
+    <div>
+      <span class="selo">
+        <svg class="ic" viewBox="0 0 24 24" style="width:16px;height:16px"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.5-4.8 2.5.9-5.4L4.2 7.7l5.4-.8z"/></svg>
+        IA para crianças · 7 a 14 anos
+      </span>
+      <h1>Seu aluno não vai só <em>usar</em> inteligência artificial. Vai <em>construir</em> com ela.</h1>
+      <p class="sub">O extracurricular anual que forma criadores: as crianças treinam modelos, criam arte, programam com IA — e terminam o ano com um jogo próprio publicado, apresentado numa feira aberta às famílias.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-primario" href="#demo">
+          <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:#231800"><path d="M7 4l13 8-13 8z"/></svg>
+          Jogar a demo
+        </a>
+        <a class="btn btn-fantasma" href="https://wa.me/5511951000900?text=Quero%20o%20Projeto%20TIT%C3%83%20na%20minha%20escola">Falar com a gente</a>
+      </div>
+      <div class="hero-fatos">
+        <div class="fato"><div class="n">3</div><div class="l">trilhas por idade</div></div>
+        <div class="fato"><div class="n">32</div><div class="l">aulas de 1h por ano</div></div>
+        <div class="fato"><div class="n">12–16</div><div class="l">alunos por turma</div></div>
+        <div class="fato"><div class="n">1</div><div class="l">jogo publicado por aluno</div></div>
+      </div>
     </div>
+
+    <a class="arcade" href="#demo" aria-label="Jogar a demo Batalha de Titãs">
+      <div class="arcade-ceu">
+        <div class="arcade-lua"></div>
+        <svg viewBox="0 0 400 150" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M0 150 L0 70 L28 70 L28 40 L60 40 L60 84 L92 84 L92 30 L118 30 L118 66 L150 66 L150 12 L186 12 L186 58 L214 58 L214 36 L250 36 L250 78 L282 78 L282 22 L312 22 L312 62 L344 62 L344 44 L372 44 L372 90 L400 90 L400 150 Z"
+                fill="#1d2743"/>
+          <path d="M0 150 L0 104 L40 104 L40 76 L84 76 L84 112 L128 112 L128 60 L170 60 L170 98 L216 98 L216 70 L262 70 L262 108 L306 108 L306 84 L352 84 L352 116 L400 116 L400 150 Z"
+                fill="#2a3557"/>
+        </svg>
+        <div class="arcade-play" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></svg>
+        </div>
+      </div>
+      <div class="arcade-rodape">
+        <span class="t">BATALHA DE TITÃS</span>
+        <span class="s">jogo 3D · 2 jogadores · jogue agora</span>
+      </div>
+    </a>
   </div>
 </div>
 
-<nav><div class="inner">
-  <a href="#visao">Visão</a>
-  <a href="#resultados">Resultados</a>
-  <a href="#demo">🎮 Demo jogável</a>
-  <a href="#principios">Princípios</a>
-  <a href="#trilhas">Trilhas &amp; ementa</a>
-  <a href="#ferramentas">Ferramentas</a>
-  <a href="#etica">Ética &amp; segurança</a>
-  <a href="#avaliacao">Avaliação</a>
-  <a href="#bncc">BNCC &amp; lei</a>
-  <a href="#operacao">Operação</a>
-  <a href="#comercial">Comercial</a>
-  <a href="#roadmap">Implantação</a>
-  <a href="#objecoes">Objeções</a>
-</div></nav>
-
-<main>
-
-<section id="visao">
-  <div class="eyebrow">01 · Visão</div>
-  <h2>Por que este programa, por que agora</h2>
-  <p>Toda escola do Brasil vai precisar responder à mesma pergunta nos próximos dois anos: <strong>"o que vocês estão fazendo sobre inteligência artificial?"</strong>. A maioria vai responder com uma palestra. O Projeto TITÃ responde com alunos que <em>constroem</em>: treinam modelos, criam arte, escrevem código com um copiloto de IA e terminam o ano com um jogo funcionando, publicado num link que a família abre no celular.</p>
-  <p>A tese pedagógica é uma só: <strong>criança que cria com a tecnologia deixa de ser refém dela</strong>. O aluno que já treinou um classificador de imagens entende — no corpo — por que a IA erra, por que dados enviesados geram respostas enviesadas e por que nem tudo que a máquina diz é verdade. Nenhuma palestra sobre "uso consciente de telas" ensina isso. Construir ensina.</p>
-  <p class="mut">O momento regulatório joga a favor: a Política Nacional de Educação Digital (Lei 14.533/2023) e a BNCC da Computação, homologada pelo MEC, colocam pensamento computacional e cultura digital como obrigação curricular — e a maioria das escolas ainda não tem resposta estruturada. Quem chegar com programa pronto, seguro e alinhado à norma entra na frente.</p>
-</section>
-
-<section id="resultados">
-  <div class="eyebrow">02 · Resultados</div>
-  <h2>O que o aluno leva pra casa</h2>
-  <div class="grade3">
-    <div class="cartao">
-      <h4 style="color:var(--t1)">Aos 7–9 anos</h4>
-      <p style="font-size:15px">Explica com as próprias palavras o que é uma máquina que aprende, monta histórias e jogos simples em Scratch e apresenta o próprio joguinho na feira de fim de ano.</p>
-    </div>
-    <div class="cartao">
-      <h4 style="color:var(--t2)">Aos 10–12 anos</h4>
-      <p style="font-size:15px">Treina modelos de verdade (imagem, som, pose), conecta IA aos próprios jogos — inclusive jogo controlado por gestos na webcam — e detecta deepfake e fake news com método.</p>
-    </div>
-    <div class="cartao">
-      <h4 style="color:var(--t3)">Aos 13–14 anos</h4>
-      <p style="font-size:15px">Programa em HTML/JavaScript usando IA como copiloto, domina engenharia de prompt, entende por dentro como um modelo generativo funciona e publica um jogo autoral completo.</p>
-    </div>
+<div class="cred">
+  <div class="wrap">
+    <span><svg class="ic" viewBox="0 0 24 24"><path d="M9 12l2 2 4-5"/><circle cx="12" cy="12" r="9"/></svg> Alinhado à BNCC da Computação</span>
+    <span><svg class="ic" viewBox="0 0 24 24"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/></svg> Política LGPD por escrito</span>
+    <span><svg class="ic" viewBox="0 0 24 24"><path d="M4 19V5m0 14h16M8 15v-4m4 4V8m4 7v-6"/></svg> Resposta à Lei 14.533/2023</span>
+    <span><svg class="ic" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="10" r="2.5"/><path d="M3 19c0-3 2.5-5 6-5s6 2 6 5m1-4c2.2.3 4 1.7 4 4"/></svg> Turmas pequenas com educador formado</span>
   </div>
-  <div class="aviso"><p><strong>A prova de conceito já existe — e dá pra jogar agora:</strong> a demonstração do programa é um jogo de luta 3D estilo kaiju, jogável nesta página. <a href="#demo" style="color:var(--ambar-forte);font-weight:700">Desça até a demo</a> ou abra direto em <a href="jogo/" style="color:var(--ambar-forte);font-weight:700">/jogo</a>.</p></div>
-</section>
+</div>
 
-
-<section id="demo">
-  <div class="eyebrow">Demo jogável</div>
-  <h2>BATALHA DE TITÃS</h2>
-  <p>Jogo de luta 3D pra <strong>dois jogadores no mesmo teclado</strong>: cinco monstros gigantes, golpe especial próprio pra cada um, voo de verdade pra quem tem asa e prédios que desabam no nocaute.</p>
-  <p>Ele nasceu em casa: foi criado pro <strong>Pedro (9 anos) e o irmão jogarem em dupla</strong> — usando exatamente as técnicas que a trilha Inventores ensina: JavaScript, 3D no navegador e IA como copiloto de programação. Na aula 17, os alunos desmontam este jogo peça por peça pra entender como ele funciona por dentro. No fim do ano, cada um publica o seu.</p>
-  <div class="cartao" style="text-align:center">
-    <p style="max-width:none"><a href="jogo/" style="display:inline-block;background:var(--ambar);color:#1c1608;font-family:Futura,'Century Gothic','Trebuchet MS',sans-serif;font-weight:700;font-size:18px;letter-spacing:.04em;padding:14px 34px;border-radius:999px;text-decoration:none">▶ JOGAR AGORA</a></p>
-    <p class="mut" style="max-width:none;font-size:14px;margin:10px 0 0">Precisa de teclado — joga no computador. J1: <strong>A D</strong> anda · <strong>W</strong> pula · <strong>S</strong> bate &nbsp;|&nbsp; J2: <strong>← →</strong> · <strong>↑</strong> · <strong>↓</strong>. Barra de fúria cheia = golpe ESPECIAL no mesmo botão.</p>
+<section id="programa">
+  <div class="cabeca">
+    <div class="eyebrow">Por que o TITÃ</div>
+    <h2>Toda escola vai ser cobrada sobre IA. Poucas terão resposta.</h2>
+    <p>A maioria responde com palestra. O TITÃ responde com alunos que constroem — porque criança que cria com a tecnologia deixa de ser refém dela.</p>
   </div>
-</section>
-
-<section id="principios">
-  <div class="eyebrow">03 · Princípios pedagógicos</div>
-  <h2>Como a gente ensina</h2>
-  <div class="princ">
-    <div class="cartao"><h4>Mão na massa: 70/30</h4><p>No máximo 20 minutos de conversa guiada; o resto da aula é construção. Conceito novo entra sempre a serviço de algo que o aluno quer fazer.</p></div>
-    <div class="cartao"><h4>Criar &gt; consumir</h4><p>A IA nunca aparece como brinquedo pronto. Aparece como material de construção: o aluno treina, ajusta, quebra e conserta.</p></div>
-    <div class="cartao"><h4>IA como ferramenta E como objeto</h4><p>Alternamos entre usar a IA pra criar (arte, código, som) e abrir o capô pra entender como ela funciona — e onde falha.</p></div>
-    <div class="cartao"><h4>Ética transversal, não capítulo</h4><p>Viés, privacidade, plágio e alucinação aparecem dentro dos projetos, na hora em que o problema surge de verdade — não numa aula-sermão isolada.</p></div>
-    <div class="cartao"><h4>Progressão em espiral</h4><p>Os mesmos conceitos (dados, treino, erro, iteração) voltam a cada trilha em profundidade maior. Quem entra aos 7 e sai aos 14 revisita tudo três vezes, cada vez mais fundo.</p></div>
-    <div class="cartao"><h4>Apresentação pública</h4><p>Toda unidade fecha com uma "missão" apresentável e o ano fecha com feira aberta às famílias. Criança que mostra o que fez aprende duas vezes — e pai que vê, renova.</p></div>
-  </div>
-</section>
-
-<section id="trilhas">
-  <div class="eyebrow">04 · Trilhas &amp; ementa completa</div>
-  <h2>3 trilhas, 32 aulas cada, 4 unidades por ano</h2>
-  <p>Cada trilha é uma turma separada, com material próprio. As 4 unidades seguem o mesmo arco em todas as idades — <strong>entender a IA → treinar a máquina → criar com IA → projeto final</strong> — o que simplifica a formação de educadores e a comunicação com a escola.</p>
-
-  <!-- ============ TRILHA 1 ============ -->
-  <div class="trilha t1">
-    <div class="trilha-cab">
-      <div class="tag">Trilha 1 · 7 a 9 anos · 2º–4º ano EF</div>
-      <h3>EXPLORADORES</h3>
-      <div class="meta">Descobrir que máquinas aprendem — e que eu consigo ensinar e criar.</div>
+  <div class="wrap cards3">
+    <div class="card">
+      <div class="ic-caixa" style="background:var(--t1-suave);color:var(--t1)">
+        <svg class="ic" viewBox="0 0 24 24"><path d="M12 5a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V8a3 3 0 0 0-3-3z"/><path d="M9 10H6a2 2 0 0 0 0 4h3m6-4h3a2 2 0 0 1 0 4h-3M12 5V3m0 18v-2"/></svg>
+      </div>
+      <h3>Entende a IA por dentro</h3>
+      <p>O aluno treina os próprios modelos e descobre no processo por que a IA erra, o que é viés e por que nem tudo que a máquina diz é verdade. Senso crítico que palestra nenhuma ensina.</p>
     </div>
-    <div class="trilha-corpo">
-      <p>Quase tudo lúdico e visual: atividades desplugadas, Quick Draw!, Teachable Machine em modo coletivo e Scratch como primeira linguagem. A IA generativa aparece apenas na tela projetada do educador. Leitura e escrita mínimas.</p>
-
-      <details class="unidade" open>
-        <summary>Unidade 1 — Máquinas que aprendem? <span class="qtd">aulas 1–8</span></summary>
-        <div class="aulas">
-          <div class="aula"><span class="aula-num">1</span>O que é ser inteligente? Robô pensa?</div>
-          <div class="aula"><span class="aula-num">2</span>Caça-padrões (jogo desplugado)</div>
-          <div class="aula"><span class="aula-num">3</span>Professor de robô: humanos treinando humanos</div>
-          <div class="aula"><span class="aula-num">4</span>Quick, Draw!: a máquina adivinha meu desenho</div>
-          <div class="aula"><span class="aula-num">5</span>Dados: a comida da IA</div>
-          <div class="aula"><span class="aula-num">6</span>Erro e acerto: como a máquina melhora</div>
-          <div class="aula"><span class="aula-num">7</span>IA no meu dia: YouTube, Alexa, corretor</div>
-          <div class="aula"><span class="aula-num">8</span>Missão 1: adestrando a máquina (Teachable Machine em grupo)</div>
-        </div>
-      </details>
-      <details class="unidade">
-        <summary>Unidade 2 — Mundo Scratch <span class="qtd">aulas 9–16</span></summary>
-        <div class="aulas">
-          <div class="aula"><span class="aula-num">9</span>Primeiros blocos: fazer o gato andar</div>
-          <div class="aula"><span class="aula-num">10</span>Meu personagem, minhas regras</div>
-          <div class="aula"><span class="aula-num">11</span>Eventos: "quando clicar, aconteça"</div>
-          <div class="aula"><span class="aula-num">12</span>Sons, falas e balões</div>
-          <div class="aula"><span class="aula-num">13</span>Contando uma história animada</div>
-          <div class="aula"><span class="aula-num">14</span>Labirinto I: chegar até o tesouro</div>
-          <div class="aula"><span class="aula-num">15</span>Labirinto II: inimigos e vidas</div>
-          <div class="aula"><span class="aula-num">16</span>Missão 2: minha história animada</div>
-        </div>
-      </details>
-      <details class="unidade">
-        <summary>Unidade 3 — Eu e a IA criamos juntos <span class="qtd">aulas 17–24</span></summary>
-        <div class="aulas">
-          <div class="aula"><span class="aula-num">17</span>AutoDraw: meu rabisco vira desenho</div>
-          <div class="aula"><span class="aula-num">18</span>Criando personagens com IA (tela do educador)</div>
-          <div class="aula"><span class="aula-num">19</span>A IA escreve com a gente: história coletiva</div>
-          <div class="aula"><span class="aula-num">20</span>Verdade ou IA? Caçando imagens inventadas</div>
-          <div class="aula"><span class="aula-num">21</span>Jogo de pegar I: perseguição</div>
-          <div class="aula"><span class="aula-num">22</span>Jogo de pegar II: pontos e placar</div>
-          <div class="aula"><span class="aula-num">23</span>Jogo de pegar III: fases e velocidade</div>
-          <div class="aula"><span class="aula-num">24</span>Missão 3: meu joguinho de pegar</div>
-        </div>
-      </details>
-      <details class="unidade">
-        <summary>Unidade 4 — Projeto final <span class="qtd">aulas 25–32</span></summary>
-        <div class="aulas">
-          <div class="aula"><span class="aula-num">25</span>Escolhendo e desenhando meu jogo</div>
-          <div class="aula"><span class="aula-num">26</span>Construção I: cenário</div>
-          <div class="aula"><span class="aula-num">27</span>Construção II: personagens</div>
-          <div class="aula"><span class="aula-num">28</span>Construção III: a regra do jogo</div>
-          <div class="aula"><span class="aula-num">29</span>Construção IV: sons e capricho</div>
-          <div class="aula"><span class="aula-num">30</span>Playtest em dupla: testar e melhorar</div>
-          <div class="aula"><span class="aula-num">31</span>Cartaz e convite da feira (com ajuda da IA)</div>
-          <div class="aula"><span class="aula-num">32</span>🎉 Feira dos Exploradores</div>
-        </div>
-      </details>
+    <div class="card">
+      <div class="ic-caixa" style="background:var(--t2-suave);color:var(--t2)">
+        <svg class="ic" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="11" rx="4"/><path d="M7 11v3m-1.5-1.5h3M15.5 11.5h.01M18 13.5h.01"/></svg>
+      </div>
+      <h3>Cria de verdade — e publica</h3>
+      <p>Nada de tutorial decorado: cada unidade termina com uma missão apresentável e o ano termina com um jogo autoral publicado num link que a família abre no celular.</p>
     </div>
-  </div>
-
-  <!-- ============ TRILHA 2 ============ -->
-  <div class="trilha t2">
-    <div class="trilha-cab">
-      <div class="tag">Trilha 2 · 10 a 12 anos · 5º–7º ano EF</div>
-      <h3>CONSTRUTORES</h3>
-      <div class="meta">Treinar modelos de verdade e colocar IA dentro dos próprios jogos.</div>
-    </div>
-    <div class="trilha-corpo">
-      <p>O aluno passa de usuário a treinador: classificadores de imagem, som e pose no Teachable Machine e no Machine Learning for Kids, conectados ao Scratch. Primeiro contato estruturado com prompts e com senso crítico digital (deepfake, viés, fontes).</p>
-
-      <details class="unidade" open>
-        <summary>Unidade 1 — Como a máquina aprende <span class="qtd">aulas 1–8</span></summary>
-        <div class="aulas">
-          <div class="aula"><span class="aula-num">1</span>IA por dentro: dados → treino → palpite</div>
-          <div class="aula"><span class="aula-num">2</span>Treinando com imagens (Teachable Machine)</div>
-          <div class="aula"><span class="aula-num">3</span>Treinando com sons e poses</div>
-          <div class="aula"><span class="aula-num">4</span>Viés: quando a máquina aprende errado</div>
-          <div class="aula"><span class="aula-num">5</span>Machine Learning for Kids: classificando texto</div>
-          <div class="aula"><span class="aula-num">6</span>Meu classificador: do zero ao teste</div>
-          <div class="aula"><span class="aula-num">7</span>IA no mundo real: mapas, tradutor, recomendação</div>
-          <div class="aula"><span class="aula-num">8</span>Missão 1: detector inteligente</div>
-        </div>
-      </details>
-      <details class="unidade">
-        <summary>Unidade 2 — Scratch turbinado com IA <span class="qtd">aulas 9–16</span></summary>
-        <div class="aulas">
-          <div class="aula"><span class="aula-num">9</span>Scratch pro: variáveis e placar</div>
-          <div class="aula"><span class="aula-num">10</span>Condições, loops e clones</div>
-          <div class="aula"><span class="aula-num">11</span>Plugando meu modelo no Scratch</div>
-          <div class="aula"><span class="aula-num">12</span>Jogo por gestos I: a webcam é o controle</div>
-          <div class="aula"><span class="aula-num">13</span>Jogo por gestos II: fases e desafio</div>
-          <div class="aula"><span class="aula-num">14</span>Chatbot de blocos I: perguntas e respostas</div>
-          <div class="aula"><span class="aula-num">15</span>Chatbot de blocos II: personalidade</div>
-          <div class="aula"><span class="aula-num">16</span>Missão 2: o jogo que me obedece</div>
-        </div>
-      </details>
-      <details class="unidade">
-        <summary>Unidade 3 — Criar com IA + senso crítico <span class="qtd">aulas 17–24</span></summary>
-        <div class="aulas">
-          <div class="aula"><span class="aula-num">17</span>Prompt: a arte de pedir direito</div>
-          <div class="aula"><span class="aula-num">18</span>Sprites e cenários gerados por IA</div>
-          <div class="aula"><span class="aula-num">19</span>Sons e trilha com IA</div>
-          <div class="aula"><span class="aula-num">20</span>Detetive digital: deepfake e fake news</div>
-          <div class="aula"><span class="aula-num">21</span>De quem é a arte que a IA fez? (plágio e crédito)</div>
-          <div class="aula"><span class="aula-num">22</span>Plataforma I: pulo e gravidade</div>
-          <div class="aula"><span class="aula-num">23</span>Plataforma II: moedas, inimigos, chefão</div>
-          <div class="aula"><span class="aula-num">24</span>Missão 3: fase de plataforma com arte de IA</div>
-        </div>
-      </details>
-      <details class="unidade">
-        <summary>Unidade 4 — Projeto final <span class="qtd">aulas 25–32</span></summary>
-        <div class="aulas">
-          <div class="aula"><span class="aula-num">25</span>Pitch: meu jogo em 1 página</div>
-          <div class="aula"><span class="aula-num">26</span>Produção I: mecânica central</div>
-          <div class="aula"><span class="aula-num">27</span>Produção II: arte e identidade</div>
-          <div class="aula"><span class="aula-num">28</span>Produção III: fases e dificuldade</div>
-          <div class="aula"><span class="aula-num">29</span>Produção IV: som e polimento</div>
-          <div class="aula"><span class="aula-num">30</span>Playtest cruzado entre equipes</div>
-          <div class="aula"><span class="aula-num">31</span>Trailer e cartaz com IA</div>
-          <div class="aula"><span class="aula-num">32</span>🎉 Feira dos Construtores</div>
-        </div>
-      </details>
-    </div>
-  </div>
-
-  <!-- ============ TRILHA 3 ============ -->
-  <div class="trilha t3">
-    <div class="trilha-cab">
-      <div class="tag">Trilha 3 · 13 a 14 anos · 8º–9º ano EF</div>
-      <h3>INVENTORES</h3>
-      <div class="meta">Programar de verdade com a IA como copiloto — e publicar um jogo autoral.</div>
-    </div>
-    <div class="trilha-corpo">
-      <p>Aqui o aluno escreve código real (HTML, CSS, JavaScript, canvas) usando um assistente de IA sob supervisão — o mesmo fluxo de trabalho dos estúdios profissionais. Aprende a pedir, <strong>ler</strong>, testar e corrigir código gerado, em vez de aceitar cegamente. Fecha o ano com um jogo publicado num link próprio.</p>
-
-      <details class="unidade" open>
-        <summary>Unidade 1 — IA generativa por dentro <span class="qtd">aulas 1–8</span></summary>
-        <div class="aulas">
-          <div class="aula"><span class="aula-num">1</span>Como o ChatGPT funciona (jogo das probabilidades)</div>
-          <div class="aula"><span class="aula-num">2</span>Engenharia de prompt I: contexto e clareza</div>
-          <div class="aula"><span class="aula-num">3</span>Engenharia de prompt II: papéis, exemplos, iteração</div>
-          <div class="aula"><span class="aula-num">4</span>Alucinação: quando a IA inventa com confiança</div>
-          <div class="aula"><span class="aula-num">5</span>Minha primeira página: HTML e CSS</div>
-          <div class="aula"><span class="aula-num">6</span>JavaScript: a página ganha vida</div>
-          <div class="aula"><span class="aula-num">7</span>Site pessoal com IA como copiloto</div>
-          <div class="aula"><span class="aula-num">8</span>Missão 1: meu site no ar</div>
-        </div>
-      </details>
-      <details class="unidade">
-        <summary>Unidade 2 — Programando com copiloto <span class="qtd">aulas 9–16</span></summary>
-        <div class="aulas">
-          <div class="aula"><span class="aula-num">9</span>Canvas: desenhando com código</div>
-          <div class="aula"><span class="aula-num">10</span>Movimento e teclado</div>
-          <div class="aula"><span class="aula-num">11</span>Colisões, pontos e game over</div>
-          <div class="aula"><span class="aula-num">12</span>Meu primeiro arcade: nave ou pong</div>
-          <div class="aula"><span class="aula-num">13</span>Debugando com IA: achar o erro junto</div>
-          <div class="aula"><span class="aula-num">14</span>Ler código que a IA escreveu (e julgar)</div>
-          <div class="aula"><span class="aula-num">15</span>Melhorar sem quebrar: mudanças pequenas</div>
-          <div class="aula"><span class="aula-num">16</span>Missão 2: arcade próprio jogável</div>
-        </div>
-      </details>
-      <details class="unidade">
-        <summary>Unidade 3 — Nível TITÃ <span class="qtd">aulas 17–24</span></summary>
-        <div class="aulas">
-          <div class="aula"><span class="aula-num">17</span>Anatomia de um jogo de verdade (desmontando o Batalha de Titãs)</div>
-          <div class="aula"><span class="aula-num">18</span>Física de jogo: gravidade, pulo, knockback</div>
-          <div class="aula"><span class="aula-num">19</span>Dois jogadores no mesmo teclado</div>
-          <div class="aula"><span class="aula-num">20</span>Sons gerados por código</div>
-          <div class="aula"><span class="aula-num">21</span>Arte com IA: gerar, tratar, integrar</div>
-          <div class="aula"><span class="aula-num">22</span>Balanceamento: o que torna um jogo justo</div>
-          <div class="aula"><span class="aula-num">23</span>Ética séria: privacidade, direitos autorais, IA na escola</div>
-          <div class="aula"><span class="aula-num">24</span>Missão 3: clone evoluído de um clássico</div>
-        </div>
-      </details>
-      <details class="unidade">
-        <summary>Unidade 4 — Projeto final <span class="qtd">aulas 25–32</span></summary>
-        <div class="aulas">
-          <div class="aula"><span class="aula-num">25</span>GDD: documento do jogo + escopo realista</div>
-          <div class="aula"><span class="aula-num">26</span>Sprint I: mecânica central</div>
-          <div class="aula"><span class="aula-num">27</span>Sprint II: conteúdo e fases</div>
-          <div class="aula"><span class="aula-num">28</span>Sprint III: arte e som</div>
-          <div class="aula"><span class="aula-num">29</span>Sprint IV: polimento</div>
-          <div class="aula"><span class="aula-num">30</span>Playtest público interno</div>
-          <div class="aula"><span class="aula-num">31</span>Publicação: link + página do jogo</div>
-          <div class="aula"><span class="aula-num">32</span>🎉 Feira dos Inventores: arcade aberto às famílias</div>
-        </div>
-      </details>
+    <div class="card">
+      <div class="ic-caixa" style="background:var(--t3-suave);color:var(--t3)">
+        <svg class="ic" viewBox="0 0 24 24"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg>
+      </div>
+      <h3>Ética como fundação</h3>
+      <p>IA generativa só na tela do educador até os 12 anos, dados mínimos, autoria declarada em todo projeto. A escola recebe a política por escrito, pronta pro regimento.</p>
     </div>
   </div>
 </section>
 
-<section id="ferramentas">
-  <div class="eyebrow">05 · Ferramentas</div>
-  <h2>Stack de sala: gratuito e no navegador</h2>
-  <p>Nenhuma instalação além do navegador. Nenhuma licença paga obrigatória na operação padrão.</p>
-  <div class="rolagem"><table>
-    <tr><th>Ferramenta</th><th>O que faz</th><th>Trilhas</th></tr>
-    <tr><td>Quick, Draw! / AutoDraw</td><td>IA que reconhece e completa desenhos — porta de entrada lúdica</td><td>7–9</td></tr>
-    <tr><td>Teachable Machine</td><td>Treinar modelos de imagem, som e pose sem código; roda no navegador, sem enviar fotos pra nuvem</td><td>7–9 · 10–12</td></tr>
-    <tr><td>Scratch</td><td>Programação em blocos; base de jogos das trilhas 1 e 2</td><td>7–9 · 10–12</td></tr>
-    <tr><td>Machine Learning for Kids</td><td>Classificadores de texto/imagem integrados ao Scratch</td><td>10–12</td></tr>
-    <tr><td>Gerador de imagem/música</td><td>Arte e trilha dos jogos (conta do educador; alunos dirigem os prompts)</td><td>10–12 · 13–14</td></tr>
-    <tr><td>Assistente de IA (copiloto)</td><td>Par de programação dos Inventores: gera, explica e corrige código</td><td>13–14</td></tr>
-    <tr><td>Editor web (CodePen/p5.js)</td><td>Escrever e publicar HTML/JS direto do navegador</td><td>13–14</td></tr>
-  </table></div>
-</section>
+<section id="trilhas" style="background:var(--branco)">
+  <div class="cabeca">
+    <div class="eyebrow">O programa</div>
+    <h2>Três trilhas, uma jornada: entender, treinar, criar, publicar</h2>
+    <p>Turmas separadas por idade, 32 aulas anuais cada, com o mesmo arco em profundidade crescente. A ementa completa está aberta abaixo — sem caixa-preta pedagógica.</p>
+  </div>
+  <div class="wrap">
 
-<section id="etica">
-  <div class="eyebrow">06 · Ética &amp; segurança</div>
-  <h2>Regras inegociáveis</h2>
-  <div class="grade2">
-    <div class="cartao"><h4>Idade e contas</h4><p style="font-size:15px">Ferramentas de IA generativa têm termo de uso 13+. <strong>Até 12 anos, a IA generativa opera só na tela projetada do educador</strong> — os alunos dirigem, o adulto digita. Dos 13 em diante, contas mediante termo de consentimento assinado pelos responsáveis.</p></div>
-    <div class="cartao"><h4>LGPD e dados de menores</h4><p style="font-size:15px">Cadastro mínimo (nome e turma), sem foto ou voz de aluno em ferramenta externa sem autorização expressa. O treino com webcam usa o Teachable Machine, que processa localmente no navegador.</p></div>
-    <div class="cartao"><h4>IA assina como coautora</h4><p style="font-size:15px">Todo projeto declara o que foi feito pelo aluno e o que foi gerado por IA. Ensina crédito e honestidade intelectual desde os 7 anos — e responde de bandeja a pergunta do "e o plágio?" dos professores.</p></div>
-    <div class="cartao"><h4>Conteúdo e supervisão</h4><p style="font-size:15px">Prompts e produções passam pelo educador; temas sensíveis bloqueados em política escrita entregue à escola. Nada de rede social nem publicação com dados pessoais — os jogos são publicados em página do programa, por apelido.</p></div>
+    <article class="trilha tt1">
+      <div class="trilha-topo">
+        <div class="trilha-id t1g">
+          <span class="faixa">Trilha 1 · 7 a 9 anos</span>
+          <h3>Exploradores</h3>
+          <span class="serie">2º ao 4º ano EF</span>
+        </div>
+        <div class="trilha-resumo">
+          <p>Descobrir, brincando, que máquinas aprendem — e que dá pra ensinar e criar com elas. Atividades desplugadas, Quick Draw!, Teachable Machine em grupo e Scratch como primeira linguagem.</p>
+          <div class="leva">
+            <span><svg class="ic" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Explica com as próprias palavras o que é uma máquina que aprende</span>
+            <span><svg class="ic" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Cria histórias animadas e jogos simples em Scratch</span>
+            <span><svg class="ic" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Apresenta o próprio joguinho na Feira dos Exploradores</span>
+          </div>
+        </div>
+      </div>
+      <details class="ementa">
+        <summary><svg class="ic" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>Ver as 32 aulas da trilha</summary>
+        <div class="unidades">
+          <div class="uni"><h4>Unidade 1 · Máquinas que aprendem?</h4><ol>
+            <li><b>1</b>O que é ser inteligente? Robô pensa?</li>
+            <li><b>2</b>Caça-padrões (jogo desplugado)</li>
+            <li><b>3</b>Professor de robô: humanos treinando humanos</li>
+            <li><b>4</b>Quick, Draw!: a máquina adivinha meu desenho</li>
+            <li><b>5</b>Dados: a comida da IA</li>
+            <li><b>6</b>Erro e acerto: como a máquina melhora</li>
+            <li><b>7</b>IA no meu dia: YouTube, Alexa, corretor</li>
+            <li><b>8</b>Missão 1: adestrando a máquina em grupo</li>
+          </ol></div>
+          <div class="uni"><h4>Unidade 2 · Mundo Scratch</h4><ol>
+            <li><b>9</b>Primeiros blocos: fazer o gato andar</li>
+            <li><b>10</b>Meu personagem, minhas regras</li>
+            <li><b>11</b>Eventos: "quando clicar, aconteça"</li>
+            <li><b>12</b>Sons, falas e balões</li>
+            <li><b>13</b>Contando uma história animada</li>
+            <li><b>14</b>Labirinto I: chegar até o tesouro</li>
+            <li><b>15</b>Labirinto II: inimigos e vidas</li>
+            <li><b>16</b>Missão 2: minha história animada</li>
+          </ol></div>
+          <div class="uni"><h4>Unidade 3 · Eu e a IA criamos juntos</h4><ol>
+            <li><b>17</b>AutoDraw: meu rabisco vira desenho</li>
+            <li><b>18</b>Personagens com IA (tela do educador)</li>
+            <li><b>19</b>A IA escreve com a gente: história coletiva</li>
+            <li><b>20</b>Verdade ou IA? Caçando imagens inventadas</li>
+            <li><b>21</b>Jogo de pegar I: perseguição</li>
+            <li><b>22</b>Jogo de pegar II: pontos e placar</li>
+            <li><b>23</b>Jogo de pegar III: fases e velocidade</li>
+            <li><b>24</b>Missão 3: meu joguinho de pegar</li>
+          </ol></div>
+          <div class="uni"><h4>Unidade 4 · Projeto final</h4><ol>
+            <li><b>25</b>Escolhendo e desenhando meu jogo</li>
+            <li><b>26</b>Construção I: cenário</li>
+            <li><b>27</b>Construção II: personagens</li>
+            <li><b>28</b>Construção III: a regra do jogo</li>
+            <li><b>29</b>Construção IV: sons e capricho</li>
+            <li><b>30</b>Playtest em dupla: testar e melhorar</li>
+            <li><b>31</b>Cartaz e convite da feira</li>
+            <li><b>32</b>Feira dos Exploradores</li>
+          </ol></div>
+        </div>
+      </details>
+    </article>
+
+    <article class="trilha tt2">
+      <div class="trilha-topo">
+        <div class="trilha-id t2g">
+          <span class="faixa">Trilha 2 · 10 a 12 anos</span>
+          <h3>Construtores</h3>
+          <span class="serie">5º ao 7º ano EF</span>
+        </div>
+        <div class="trilha-resumo">
+          <p>De usuário a treinador: classificadores de imagem, som e pose conectados aos próprios jogos em Scratch — inclusive jogo controlado por gestos na webcam. Primeiro contato estruturado com prompts e checagem de deepfake.</p>
+          <div class="leva">
+            <span><svg class="ic" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Treina modelos de verdade: imagem, som e pose</span>
+            <span><svg class="ic" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Constrói jogo controlado por gestos na webcam</span>
+            <span><svg class="ic" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Detecta deepfake e fake news com método</span>
+          </div>
+        </div>
+      </div>
+      <details class="ementa">
+        <summary><svg class="ic" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>Ver as 32 aulas da trilha</summary>
+        <div class="unidades">
+          <div class="uni"><h4>Unidade 1 · Como a máquina aprende</h4><ol>
+            <li><b>1</b>IA por dentro: dados, treino, palpite</li>
+            <li><b>2</b>Treinando com imagens (Teachable Machine)</li>
+            <li><b>3</b>Treinando com sons e poses</li>
+            <li><b>4</b>Viés: quando a máquina aprende errado</li>
+            <li><b>5</b>Machine Learning for Kids: texto</li>
+            <li><b>6</b>Meu classificador: do zero ao teste</li>
+            <li><b>7</b>IA no mundo real: mapas, tradutor, recomendação</li>
+            <li><b>8</b>Missão 1: detector inteligente</li>
+          </ol></div>
+          <div class="uni"><h4>Unidade 2 · Scratch turbinado com IA</h4><ol>
+            <li><b>9</b>Scratch pro: variáveis e placar</li>
+            <li><b>10</b>Condições, loops e clones</li>
+            <li><b>11</b>Plugando meu modelo no Scratch</li>
+            <li><b>12</b>Jogo por gestos I: a webcam é o controle</li>
+            <li><b>13</b>Jogo por gestos II: fases e desafio</li>
+            <li><b>14</b>Chatbot de blocos I: perguntas e respostas</li>
+            <li><b>15</b>Chatbot de blocos II: personalidade</li>
+            <li><b>16</b>Missão 2: o jogo que me obedece</li>
+          </ol></div>
+          <div class="uni"><h4>Unidade 3 · Criar com IA + senso crítico</h4><ol>
+            <li><b>17</b>Prompt: a arte de pedir direito</li>
+            <li><b>18</b>Sprites e cenários gerados por IA</li>
+            <li><b>19</b>Sons e trilha com IA</li>
+            <li><b>20</b>Detetive digital: deepfake e fake news</li>
+            <li><b>21</b>De quem é a arte que a IA fez?</li>
+            <li><b>22</b>Plataforma I: pulo e gravidade</li>
+            <li><b>23</b>Plataforma II: moedas, inimigos, chefão</li>
+            <li><b>24</b>Missão 3: fase de plataforma com arte de IA</li>
+          </ol></div>
+          <div class="uni"><h4>Unidade 4 · Projeto final</h4><ol>
+            <li><b>25</b>Pitch: meu jogo em 1 página</li>
+            <li><b>26</b>Produção I: mecânica central</li>
+            <li><b>27</b>Produção II: arte e identidade</li>
+            <li><b>28</b>Produção III: fases e dificuldade</li>
+            <li><b>29</b>Produção IV: som e polimento</li>
+            <li><b>30</b>Playtest cruzado entre equipes</li>
+            <li><b>31</b>Trailer e cartaz com IA</li>
+            <li><b>32</b>Feira dos Construtores</li>
+          </ol></div>
+        </div>
+      </details>
+    </article>
+
+    <article class="trilha tt3">
+      <div class="trilha-topo">
+        <div class="trilha-id t3g">
+          <span class="faixa">Trilha 3 · 13 a 14 anos</span>
+          <h3>Inventores</h3>
+          <span class="serie">8º e 9º ano EF</span>
+        </div>
+        <div class="trilha-resumo">
+          <p>Código de verdade — HTML, JavaScript, 3D no navegador — com a IA como copiloto, no mesmo fluxo dos estúdios profissionais. O aluno aprende a pedir, <strong>ler</strong>, testar e corrigir o que a IA gera. Na aula 17, a turma desmonta a demo Batalha de Titãs peça por peça.</p>
+          <div class="leva">
+            <span><svg class="ic" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Programa em JavaScript com IA como copiloto</span>
+            <span><svg class="ic" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Domina engenharia de prompt e detecta alucinação</span>
+            <span><svg class="ic" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Publica um jogo autoral completo num link próprio</span>
+          </div>
+        </div>
+      </div>
+      <details class="ementa">
+        <summary><svg class="ic" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>Ver as 32 aulas da trilha</summary>
+        <div class="unidades">
+          <div class="uni"><h4>Unidade 1 · IA generativa por dentro</h4><ol>
+            <li><b>1</b>Como o ChatGPT funciona: jogo das probabilidades</li>
+            <li><b>2</b>Engenharia de prompt I: contexto e clareza</li>
+            <li><b>3</b>Engenharia de prompt II: papéis, exemplos, iteração</li>
+            <li><b>4</b>Alucinação: quando a IA inventa com confiança</li>
+            <li><b>5</b>Minha primeira página: HTML e CSS</li>
+            <li><b>6</b>JavaScript: a página ganha vida</li>
+            <li><b>7</b>Site pessoal com IA como copiloto</li>
+            <li><b>8</b>Missão 1: meu site no ar</li>
+          </ol></div>
+          <div class="uni"><h4>Unidade 2 · Programando com copiloto</h4><ol>
+            <li><b>9</b>Canvas: desenhando com código</li>
+            <li><b>10</b>Movimento e teclado</li>
+            <li><b>11</b>Colisões, pontos e game over</li>
+            <li><b>12</b>Meu primeiro arcade: nave ou pong</li>
+            <li><b>13</b>Debugando com IA: achar o erro junto</li>
+            <li><b>14</b>Ler código que a IA escreveu — e julgar</li>
+            <li><b>15</b>Melhorar sem quebrar: mudanças pequenas</li>
+            <li><b>16</b>Missão 2: arcade próprio jogável</li>
+          </ol></div>
+          <div class="uni"><h4>Unidade 3 · Nível TITÃ</h4><ol>
+            <li><b>17</b>Anatomia de um jogo: desmontando o Batalha de Titãs</li>
+            <li><b>18</b>Física de jogo: gravidade, pulo, knockback</li>
+            <li><b>19</b>Dois jogadores no mesmo teclado</li>
+            <li><b>20</b>Sons gerados por código</li>
+            <li><b>21</b>Arte com IA: gerar, tratar, integrar</li>
+            <li><b>22</b>Balanceamento: o que torna um jogo justo</li>
+            <li><b>23</b>Ética séria: privacidade, autoria, IA na escola</li>
+            <li><b>24</b>Missão 3: clone evoluído de um clássico</li>
+          </ol></div>
+          <div class="uni"><h4>Unidade 4 · Projeto final</h4><ol>
+            <li><b>25</b>GDD: documento do jogo + escopo realista</li>
+            <li><b>26</b>Sprint I: mecânica central</li>
+            <li><b>27</b>Sprint II: conteúdo e fases</li>
+            <li><b>28</b>Sprint III: arte e som</li>
+            <li><b>29</b>Sprint IV: polimento</li>
+            <li><b>30</b>Playtest público interno</li>
+            <li><b>31</b>Publicação: link + página do jogo</li>
+            <li><b>32</b>Feira dos Inventores: arcade aberto às famílias</li>
+          </ol></div>
+        </div>
+      </details>
+    </article>
+
   </div>
 </section>
 
-<section id="avaliacao">
-  <div class="eyebrow">07 · Avaliação</div>
-  <h2>Sem prova. Com portfólio, rubrica e plateia.</h2>
-  <p>Cada aluno acumula um <strong>portfólio digital</strong> (as 3 missões + projeto final). A cada unidade, o educador posiciona o aluno numa rubrica de 4 níveis — <em>Explorando → Construindo → Dominando → Ensinando</em> — em quatro critérios:</p>
-  <div class="rolagem"><table>
-    <tr><th>Critério</th><th>O que observa</th></tr>
-    <tr><td>Conceito</td><td>Explica o que a IA está fazendo por trás? Sabe onde ela erra?</td></tr>
-    <tr><td>Construção</td><td>Sai do tutorial? Resolve problema sozinho antes de pedir ajuda?</td></tr>
-    <tr><td>Criatividade</td><td>O projeto tem escolhas próprias ou é cópia do exemplo?</td></tr>
-    <tr><td>Colaboração &amp; ética</td><td>Ajuda colegas, dá crédito, usa a IA dentro das regras?</td></tr>
-  </table></div>
-  <p class="mut">A família recebe 2 relatórios por ano (um por semestre) + o convite da feira. O nível "Ensinando" tem função social: aluno avançado vira monitor dos colegas — o que também resolve heterogeneidade de turma.</p>
-</section>
-
-<section id="bncc">
-  <div class="eyebrow">08 · Alinhamento normativo</div>
-  <h2>O argumento que a coordenação pedagógica precisa ouvir</h2>
-  <div class="rolagem"><table>
-    <tr><th>Norma</th><th>O que pede</th><th>Como o TITÃ atende</th></tr>
-    <tr><td>BNCC — Competência Geral 5</td><td>Compreender, utilizar e <em>criar</em> tecnologias digitais de forma crítica, significativa e ética</td><td>É literalmente o programa: criação + leitura crítica de IA em todas as trilhas</td></tr>
-    <tr><td>BNCC da Computação (2022)</td><td>Pensamento computacional, mundo digital e cultura digital no Ensino Fundamental</td><td>Algoritmos e depuração (todas as trilhas), dados e modelos (U1/U2), cidadania digital (U3)</td></tr>
-    <tr><td>Lei 14.533/2023 (PNED)</td><td>Política Nacional de Educação Digital nas escolas</td><td>Programa estruturado que a escola apresenta como resposta concreta à política</td></tr>
-  </table></div>
-</section>
-
-<section id="operacao">
-  <div class="eyebrow">09 · Operação na escola</div>
-  <h2>Quem faz o quê</h2>
-  <div class="grade2">
-    <div class="cartao">
-      <h4>A escola entrega</h4>
-      <p style="font-size:15px">· Laboratório com PCs + internet (1 máquina por até 2 alunos)<br>
-      · 1h semanal no contraturno + espaço pra feira 2×/ano<br>
-      · Divulgação nos canais da escola<br>
-      · Um ponto de contato na coordenação</p>
+<section class="demo" id="demo">
+  <div class="cabeca">
+    <div class="eyebrow">Demo jogável</div>
+    <h2>Batalha de Titãs: jogue aqui mesmo</h2>
+    <p>Jogo de luta 3D pra dois jogadores no mesmo teclado — cinco monstros, golpe especial próprio pra cada um, voo de verdade e prédios que desabam. Criado em casa pro Pedro (9 anos) e o irmão jogarem, com as mesmas técnicas que a trilha Inventores ensina. Na aula 17, os alunos desmontam este jogo pra entender como ele funciona por dentro.</p>
+  </div>
+  <div class="wrap">
+    <div class="tela-jogo">
+      <iframe id="frame-jogo" title="Jogo Batalha de Titãs" loading="lazy" allow="fullscreen"></iframe>
+      <button class="tela-capa" id="capa-jogo" type="button">
+        <span class="arcade-play" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></svg>
+        </span>
+        <span class="t">Clique pra jogar</span>
+        <span class="s">Precisa de teclado — melhor no computador. Chame alguém pro 2º jogador!</span>
+      </button>
     </div>
-    <div class="cartao">
-      <h4>O programa entrega</h4>
-      <p style="font-size:15px">· Currículo completo das 3 trilhas + material aula a aula<br>
-      · Educador formado (ou formação do indicado pela escola)<br>
-      · Plataforma de portfólio e comunicação com famílias<br>
-      · Relatórios semestrais + organização das feiras<br>
-      · Política de ética/LGPD pronta pra anexar ao regimento</p>
+    <div class="controles">
+      <span>Jogador 1: <kbd>A</kbd><kbd>D</kbd> anda · <kbd>W</kbd> pula · <kbd>S</kbd> bate</span>
+      <span>Jogador 2: <kbd>◀</kbd><kbd>▶</kbd> anda · <kbd>▲</kbd> pula · <kbd>▼</kbd> bate</span>
+      <span>Barra de fúria cheia = ESPECIAL no mesmo botão</span>
+    </div>
+    <div class="demo-nota">
+      <p>Prefere tela cheia? <a href="jogo/" target="_blank" rel="noopener">Abrir o jogo em página própria</a>. Cada monstro tem um especial diferente: sopro atômico, soco sísmico, chuva de escamas, mergulho supersônico e raios gravitacionais.</p>
     </div>
   </div>
-  <div class="aviso"><p><strong>Perfil do educador: não precisa ser programador.</strong> Precisa gostar de criança e ter fluência digital básica. A formação inicial de 20h + o material aula a aula (roteiro, slides, projetos resolvidos e "onde os alunos travam") sustentam a aula. Perfil ideal: estudante de licenciatura, pedagogia ou tecnologia — custo compatível com a operação.</p></div>
 </section>
 
-<section id="comercial">
-  <div class="eyebrow">10 · Modelo comercial</div>
-  <h2>Dois formatos de contrato</h2>
-  <div class="rolagem"><table>
-    <tr><th>Formato</th><th>Como funciona</th><th>Quando usar</th></tr>
-    <tr><td>B2B2C (padrão)</td><td>Mensalidade paga pelos pais, faixa de R$ 119–179/aluno. Escola cede espaço e recebe repasse de 10–20% ou isenção pra bolsistas</td><td>Escolas particulares médias; melhor margem e relação direta com a família</td></tr>
-    <tr><td>B2B (licença)</td><td>Escola contrata o programa por turma/ano e oferece como diferencial incluso na mensalidade dela</td><td>Escolas maiores ou redes; ticket único, previsível, sem inadimplência de pais</td></tr>
-  </table></div>
-  <p>Referência de mercado: franquias de programação infantil operam entre R$ 150 e R$ 300/mês por aluno. O posicionamento do TITÃ é <strong>preço de entrada mais agressivo com narrativa mais atual</strong> — nenhuma delas tem IA como espinha dorsal do currículo, e é isso que o diretor quer mostrar ao pai em 2026.</p>
-  <p class="mut">Unidade econômica por turma (cenário base): 14 alunos × R$ 149 = R$ 2.086/mês por 1h semanal. Educador por hora-aula + repasse à escola deixam margem bruta na casa de 55–65% já com turma única; o educador escala pra 4–6 turmas na mesma escola (trilhas e dias diferentes).</p>
-</section>
-
-<section id="roadmap">
-  <div class="eyebrow">11 · Implantação</div>
-  <h2>Do zero à rede de escolas</h2>
-  <div class="cartao">
-    <div class="fase"><div class="qd">Mês 1–2</div><div><h4>Material mínimo viável</h4><p>Fechar as 8 aulas da Unidade 1 das 3 trilhas (roteiro + slides + projetos resolvidos), a demo Batalha de Titãs e o kit de venda (esta proposta + vídeo de 2 min).</p></div></div>
-    <div class="fase"><div class="qd">Mês 3–4</div><div><h4>Piloto em 1 escola</h4><p>Oficina gratuita de 4 encontros com 1 turma por trilha. Meta: depoimentos de pais, fotos/vídeos das crianças criando e ajuste do material com atrito real de sala.</p></div></div>
-    <div class="fase"><div class="qd">Mês 5–6</div><div><h4>Primeiro contrato + formação</h4><p>Converter o piloto em turma paga, formar o primeiro educador que não é você e completar o material das Unidades 2 e 3.</p></div></div>
-    <div class="fase"><div class="qd">Mês 7–12</div><div><h4>3 escolas, 6+ turmas</h4><p>Vender com prova social do piloto. Primeira feira aberta às famílias = máquina de matrícula pro ano seguinte. Fechar o ciclo anual completo do material.</p></div></div>
-    <div class="fase"><div class="qd">Ano 2</div><div><h4>Escala</h4><p>Playbook de implantação por escola, formação de educadores em lote, e decisão estratégica: crescer próprio ou licenciar o método.</p></div></div>
+<section id="como">
+  <div class="cabeca">
+    <div class="eyebrow">Implantação</div>
+    <h2>Como o TITÃ entra na sua escola</h2>
+    <p>A escola entra com o laboratório e 1h semanal no contraturno. O programa entra com todo o resto.</p>
+  </div>
+  <div class="wrap passos">
+    <div class="passo"><h3>Oficina de demonstração</h3><p>Levamos uma aula-show gratuita pra escola: os alunos treinam uma IA e jogam a demo. A coordenação assiste o método funcionando.</p></div>
+    <div class="passo"><h3>Turmas e matrícula</h3><p>Definimos trilhas, dias e horários com a coordenação. A divulgação vai pronta: material pros pais, reunião de apresentação e página de matrícula.</p></div>
+    <div class="passo"><h3>Aulas semanais</h3><p>Educador formado pelo programa, material aula a aula, turmas de 12 a 16 alunos. A escola recebe relatório semestral por aluno.</p></div>
+    <div class="passo"><h3>Feira de titãs</h3><p>Duas vezes por ano, os alunos apresentam suas criações pras famílias. É o momento que renova matrícula — e enche a escola de orgulho.</p></div>
   </div>
 </section>
 
-<section id="objecoes">
-  <div class="eyebrow">12 · Objeções &amp; respostas</div>
-  <h2>O que diretores e pais vão perguntar</h2>
-  <div class="rolagem"><table>
-    <tr><th>Objeção</th><th>Resposta</th></tr>
-    <tr><td>"IA não vai deixar as crianças preguiçosas?"</td><td>O programa ensina a criança a ser a autora — a IA executa, ela decide. E ética/autoria é conteúdo avaliado em rubrica, não discurso.</td></tr>
-    <tr><td>"E a segurança dos dados dos alunos?"</td><td>Política LGPD por escrito: cadastro mínimo, IA generativa na tela do educador até os 12, webcam processada localmente, publicação por apelido.</td></tr>
-    <tr><td>"Meu filho já não fica tempo demais na tela?"</td><td>1h semanal de tela <em>produtiva</em> e supervisionada, com apresentação pública do que criou. É o oposto do consumo passivo.</td></tr>
-    <tr><td>"Por que não a franquia X de programação?"</td><td>Programação é o meio; o TITÃ forma pra realidade que essas crianças vão viver: criar <em>com</em> IA, criticar IA e entender IA por dentro. Currículo desenhado em 2026, não em 2015.</td></tr>
-    <tr><td>"A escola não tem professor pra isso."</td><td>Não precisa: o programa traz ou forma o educador, com material aula a aula. A escola entra com espaço e alunos.</td></tr>
-  </table></div>
+<section id="investimento" style="background:var(--branco)">
+  <div class="cabeca">
+    <div class="eyebrow">Investimento</div>
+    <h2>Dois formatos, zero custo fixo pra escola</h2>
+    <p>Referência de mercado: franquias de programação infantil cobram de R$ 150 a R$ 300 por mês. O TITÃ entrega currículo de IA — não de 2015 — por menos.</p>
+  </div>
+  <div class="wrap planos">
+    <div class="plano destaque">
+      <span class="tag">Mais comum</span>
+      <h3>Extracurricular</h3>
+      <div class="preco">R$ 119–179<small> /aluno/mês</small></div>
+      <p class="desc">Mensalidade paga pelas famílias. A escola cede o espaço e recebe repasse por aluno ou bolsas pra alunos indicados.</p>
+      <ul>
+        <li><svg class="ic" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Educador, currículo e material inclusos</li>
+        <li><svg class="ic" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Repasse de 10–20% pra escola</li>
+        <li><svg class="ic" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Relatórios semestrais + 2 feiras por ano</li>
+        <li><svg class="ic" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Política LGPD e de uso de IA por escrito</li>
+      </ul>
+    </div>
+    <div class="plano">
+      <h3>Licença pra escola</h3>
+      <div class="preco">Sob proposta<small> /turma/ano</small></div>
+      <p class="desc">A escola contrata o programa por turma e oferece como diferencial incluso na própria mensalidade. Ideal pra redes e escolas maiores.</p>
+      <ul>
+        <li><svg class="ic" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Valor único e previsível por turma</li>
+        <li><svg class="ic" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Sem cobrança direta às famílias</li>
+        <li><svg class="ic" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Formação de educador indicado pela escola</li>
+        <li><svg class="ic" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Marca "escola com programa de IA" no marketing</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="cabeca">
+    <div class="eyebrow">Dúvidas frequentes</div>
+    <h2>O que diretores e pais perguntam</h2>
+  </div>
+  <div class="faq">
+    <details>
+      <summary>IA não vai deixar as crianças preguiçosas?<svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg></summary>
+      <p class="resp">O programa ensina a criança a ser a autora — a IA executa, ela decide. Autoria e uso ético são critérios avaliados em rubrica a cada unidade, não discurso de abertura. E todo projeto declara o que foi feito pelo aluno e o que foi gerado por IA.</p>
+    </details>
+    <details>
+      <summary>E a segurança dos dados dos alunos?<svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg></summary>
+      <p class="resp">Política LGPD por escrito: cadastro mínimo (nome e turma), nenhuma foto ou voz em ferramenta externa sem autorização, IA generativa apenas na tela do educador até os 12 anos, e o treino com webcam usa ferramenta que processa tudo localmente no navegador — as imagens não saem do computador.</p>
+    </details>
+    <details>
+      <summary>Meu filho já não fica tempo demais na tela?<svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg></summary>
+      <p class="resp">É 1h semanal de tela produtiva e supervisionada, com apresentação pública do que criou no fim de cada unidade. É o oposto do consumo passivo — e várias aulas das trilhas menores são desplugadas, sem computador nenhum.</p>
+    </details>
+    <details>
+      <summary>Por que não uma franquia de programação tradicional?<svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg></summary>
+      <p class="resp">Programação é o meio; o TITÃ forma pra realidade que essas crianças vão viver: criar com IA, criticar IA e entender IA por dentro. É um currículo desenhado em 2026 — não uma grade de robótica de 2015 com verniz novo.</p>
+    </details>
+    <details>
+      <summary>A escola não tem professor pra isso.<svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg></summary>
+      <p class="resp">Não precisa ter: o programa traz o educador ou forma alguém indicado pela escola, com formação inicial de 20h e material aula a aula (roteiro, slides, projetos resolvidos e os pontos onde os alunos travam). A escola entra com espaço e alunos.</p>
+    </details>
+    <details>
+      <summary>Que resultados concretos meu aluno terá?<svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg></summary>
+      <p class="resp">Portfólio digital com 3 missões + projeto final por ano; rubrica de evolução em 4 critérios (conceito, construção, criatividade, colaboração/ética); e um jogo publicado que a família acessa por link. Sem prova — com plateia.</p>
+    </details>
+  </div>
+</section>
+
+<section class="final">
+  <div class="wrap-texto">
+    <h2>Leve o Projeto TITÃ pra sua escola</h2>
+    <p>Começamos com uma oficina de demonstração gratuita: seus alunos treinam uma IA e jogam a demo — e você avalia o método vendo suas turmas reagirem.</p>
+    <a class="btn btn-primario" href="https://wa.me/5511951000900?text=Quero%20o%20Projeto%20TIT%C3%83%20na%20minha%20escola">
+      <svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:#231800"><path d="M12 3a9 9 0 0 0-7.8 13.5L3 21l4.6-1.2A9 9 0 1 0 12 3zm4.3 12.6c-.2.6-1.2 1.1-1.7 1.1-.4.1-1 .1-1.6-.1-2.6-.8-4.3-2.9-5.2-4.4-.5-.9-.8-1.9-.4-2.6.2-.4.6-.9 1-.9h.6c.2 0 .4 0 .6.5l.7 1.7c.1.2.1.4 0 .6l-.4.6c-.1.2-.2.3-.1.5.5.9 1.6 2 2.9 2.6.2.1.4.1.5-.1l.7-.8c.2-.2.3-.2.6-.1l1.6.8c.3.1.4.2.4.4 0 .1 0 .5-.2 1z"/></svg>
+      Chamar no WhatsApp
+    </a>
+  </div>
 </section>
 
 <footer>
-  Projeto TITÃ — Criadores de IA · Escopo do programa · v1 · Nome do programa é provisório e registrável.<br>
-  Documento de apresentação para escolas parceiras.
+  <div class="wrap">
+    <span>Projeto TITÃ — Criadores de IA · IA para crianças de 7 a 14 anos</span>
+    <span>
+      <a href="escopo-programa.html">Documento pedagógico completo</a> ·
+      <a href="jogo/">Demo Batalha de Titãs</a>
+    </span>
+  </div>
 </footer>
-</main>
+
+<script>
+  // o jogo só carrega quando a pessoa clica — economiza dados e evita
+  // o iframe roubar as setas do teclado de quem só está rolando a página
+  const capa = document.getElementById('capa-jogo');
+  const frame = document.getElementById('frame-jogo');
+  capa.addEventListener('click', () => {
+    frame.src = 'jogo/';
+    capa.remove();
+    frame.focus();
+  });
+</script>
+</body>
+</html>
