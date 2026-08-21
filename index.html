@@ -128,7 +128,12 @@
     text-decoration:none;
   }
   .arcade:hover .arcade-play{ transform:scale(1.06); }
-  .arcade-ceu{ flex:1; position:relative; overflow:hidden; }
+  .arcade-ceu{ flex:1; position:relative; overflow:hidden;
+    background-image:
+      radial-gradient(1.5px 1.5px at 18% 28%, #ffffffaa 50%, transparent 51%),
+      radial-gradient(1px 1px at 42% 16%, #ffffff88 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 68% 34%, #ffffff99 50%, transparent 51%),
+      radial-gradient(1px 1px at 30% 44%, #ffffff66 50%, transparent 51%); }
   .arcade-ceu svg{ position:absolute; inset:auto 0 0 0; width:100%; }
   .arcade-lua{ position:absolute; top:14%; right:12%; width:44px; height:44px;
     border-radius:50%; background:#f4ecca; box-shadow:0 0 34px #f4ecca66; }
@@ -245,7 +250,7 @@
     background:linear-gradient(170deg,rgba(12,17,32,.55),rgba(12,17,32,.88));
     cursor:pointer; border:0; width:100%; color:#fff; font-family:inherit;
   }
-  .tela-capa .arcade-play{ position:static; }
+  .tela-capa .arcade-play{ position:static; margin:0; }
   .tela-capa .t{ font-family:'Baloo 2',sans-serif; font-weight:700; font-size:20px; }
   .tela-capa .s{ font-size:14px; color:#b9c2d8; font-weight:600; max-width:34em;
     text-align:center; padding:0 20px; }
@@ -367,10 +372,22 @@
       <div class="arcade-ceu">
         <div class="arcade-lua"></div>
         <svg viewBox="0 0 400 150" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <pattern id="janelas" width="14" height="18" patternUnits="userSpaceOnUse">
+              <rect x="4" y="5" width="4.5" height="6.5" fill="#f2c14e" opacity=".5"/>
+            </pattern>
+            <pattern id="janelas2" width="16" height="20" patternUnits="userSpaceOnUse">
+              <rect x="5" y="6" width="4.5" height="6.5" fill="#f2c14e" opacity=".8"/>
+            </pattern>
+          </defs>
           <path d="M0 150 L0 70 L28 70 L28 40 L60 40 L60 84 L92 84 L92 30 L118 30 L118 66 L150 66 L150 12 L186 12 L186 58 L214 58 L214 36 L250 36 L250 78 L282 78 L282 22 L312 22 L312 62 L344 62 L344 44 L372 44 L372 90 L400 90 L400 150 Z"
                 fill="#1d2743"/>
+          <path d="M0 150 L0 70 L28 70 L28 40 L60 40 L60 84 L92 84 L92 30 L118 30 L118 66 L150 66 L150 12 L186 12 L186 58 L214 58 L214 36 L250 36 L250 78 L282 78 L282 22 L312 22 L312 62 L344 62 L344 44 L372 44 L372 90 L400 90 L400 150 Z"
+                fill="url(#janelas)"/>
           <path d="M0 150 L0 104 L40 104 L40 76 L84 76 L84 112 L128 112 L128 60 L170 60 L170 98 L216 98 L216 70 L262 70 L262 108 L306 108 L306 84 L352 84 L352 116 L400 116 L400 150 Z"
                 fill="#2a3557"/>
+          <path d="M0 150 L0 104 L40 104 L40 76 L84 76 L84 112 L128 112 L128 60 L170 60 L170 98 L216 98 L216 70 L262 70 L262 108 L306 108 L306 84 L352 84 L352 116 L400 116 L400 150 Z"
+                fill="url(#janelas2)"/>
         </svg>
         <div class="arcade-play" aria-hidden="true">
           <svg viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></svg>
@@ -402,7 +419,7 @@
   <div class="wrap cards3">
     <div class="card">
       <div class="ic-caixa" style="background:var(--t1-suave);color:var(--t1)">
-        <svg class="ic" viewBox="0 0 24 24"><path d="M12 5a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V8a3 3 0 0 0-3-3z"/><path d="M9 10H6a2 2 0 0 0 0 4h3m6-4h3a2 2 0 0 1 0 4h-3M12 5V3m0 18v-2"/></svg>
+        <svg class="ic" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/><rect x="10" y="10" width="4" height="4"/><path d="M9 2v3m6-3v3M9 19v3m6-3v3M2 9h3m-3 6h3m14-6h3m-3 6h3"/></svg>
       </div>
       <h3>Entende a IA por dentro</h3>
       <p>O aluno treina os próprios modelos e descobre no processo por que a IA erra, o que é viés e por que nem tudo que a máquina diz é verdade. Senso crítico que palestra nenhuma ensina.</p>
